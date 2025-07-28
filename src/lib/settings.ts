@@ -54,6 +54,7 @@ export type AuthorizationType =
 export const OCPPVersion = {
   ocpp16: 'ocpp1.6',
   ocpp201: 'ocpp2.0.1',
+  ocpp21: 'ocpp2.1',
 } as const;
 export type OCPPVersion = (typeof OCPPVersion)[keyof typeof OCPPVersion];
 
@@ -74,9 +75,9 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
   {
     key: ChargeStationSetting.OCPPConfiguration,
     input: 'dropdown',
-    options: [OCPPVersion.ocpp16, OCPPVersion.ocpp201],
+    options: [OCPPVersion.ocpp16, OCPPVersion.ocpp201, OCPPVersion.ocpp21],
     name: 'OCPP Configuration',
-    description: 'OCPP Configuration to use (ocpp1.6 or ocpp2.0.1)',
+    description: 'OCPP Configuration to use (ocpp1.6, ocpp2.0.1, or ocpp2.1)',
     defaultValue: OCPPVersion.ocpp16,
   },
   {
@@ -436,7 +437,7 @@ export const defaultVariableConfig16: Variable16[] = [
   },
 ];
 
-export interface Variable201 {
+export interface Variable2 {
   component: {
     name: string;
     instance?: string;
@@ -465,7 +466,7 @@ export interface Variable201 {
   predicate?: (settings: Settings) => boolean;
 }
 
-const defaultVariableConfig201: Variable201[] = [
+const defaultVariableConfig2: Variable2[] = [
   {
     component: {
       name: 'SecurityCtrlr',
@@ -903,7 +904,7 @@ export function getSettings(): Map<string | number> {
   return result;
 }
 
-export type Variable = Variable16 | Variable201;
+export type Variable = Variable16 | Variable2;
 
 export function getConfiguration(
   ocppVersion: OCPPVersion,
@@ -919,7 +920,13 @@ export function getConfiguration(
       );
     case OCPPVersion.ocpp201:
       return new VariableConfiguration201(
-        defaultVariableConfig201,
+        defaultVariableConfig2,
+        settings,
+        query
+      );
+    case OCPPVersion.ocpp21:
+      return new VariableConfiguration21(
+        defaultVariableConfig2,
         settings,
         query
       );
@@ -967,11 +974,13 @@ export interface VariableConfiguration<Variable> {
   getVariableValue(key: string): string | number | null;
 }
 
-class VariableConfiguration201 implements VariableConfiguration<Variable201> {
-  private variables: Map<Variable201> = {};
+abstract class VariableConfiguration2
+  implements VariableConfiguration<Variable2>
+{
+  private variables: Map<Variable2> = {};
 
   constructor(
-    variables: Variable201[],
+    variables: Variable2[],
     settings: Settings,
     query?: URLSearchParams
   ) {
@@ -979,8 +988,8 @@ class VariableConfiguration201 implements VariableConfiguration<Variable201> {
       .filter((item) => {
         return item.predicate ? item.predicate(settings) : true;
       })
-      .reduce((acc: Map<Variable201>, item) => {
-        const key = getConfigurationKey201(item);
+      .reduce((acc: Map<Variable2>, item) => {
+        const key = getVariableKey(item);
         const value = query && query.get(key);
         if (value) {
           acc[key] = {
@@ -995,9 +1004,7 @@ class VariableConfiguration201 implements VariableConfiguration<Variable201> {
       }, {});
   }
 
-  getVersion(): OCPPVersion {
-    return OCPPVersion.ocpp201;
-  }
+  abstract getVersion(): OCPPVersion;
 
   getOCPPIdentityString(): string {
     const ocppIdentity = this.getVariableActualValue('SecurityCtrlr.Identity');
@@ -1111,12 +1118,24 @@ class VariableConfiguration201 implements VariableConfiguration<Variable201> {
     return actualValue.value;
   }
 
-  getVariablesArray(): Variable201[] {
+  getVariablesArray(): Variable2[] {
     return Object.values(this.variables);
   }
 
   getVariableValue(key: string): string | number | null {
     return this.getVariableActualValue(key);
+  }
+}
+
+class VariableConfiguration201 extends VariableConfiguration2 {
+  getVersion(): OCPPVersion {
+    return OCPPVersion.ocpp201;
+  }
+}
+
+class VariableConfiguration21 extends VariableConfiguration2 {
+  getVersion(): OCPPVersion {
+    return OCPPVersion.ocpp21;
   }
 }
 
@@ -1212,7 +1231,7 @@ class VariableConfiguration16 implements VariableConfiguration<Variable16> {
   }
 }
 
-export const getConfigurationKey201 = (item: Variable201): string => {
+export const getVariableKey = (item: Variable2): string => {
   const variableName = item.variable.name;
   const evseId = item.component.evse?.id;
   const connectorId = item.component.evse?.connectorId;

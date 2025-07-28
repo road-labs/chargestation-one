@@ -132,6 +132,8 @@ export default class ChargeStation {
         return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp16);
       case OCPPVersion.ocpp201:
         return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp201);
+      case OCPPVersion.ocpp21:
+        return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp21);
       default:
         return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp16);
     }

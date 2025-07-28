@@ -41,7 +41,7 @@ export const EventTypes16 = {
   SignedUpdateFirmwareReceived: 'signedUpdateFirmwareReceived',
 };
 
-// Specific to OCPP 2.0.1
+// Specific to OCPP >= 2.0.1
 export const EventTypes201 = {
   GetBaseReportReceived: 'getBaseReportReceived',
   SetVariablesReceived: 'setVariablesReceived',
