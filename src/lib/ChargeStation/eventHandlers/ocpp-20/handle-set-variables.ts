@@ -2,7 +2,7 @@ import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 
 import { SetVariablesRequest } from 'schemas/ocpp/2.0/SetVariablesRequest';
 import { SetVariablesResponse } from 'schemas/ocpp/2.0/SetVariablesResponse';
-import { Variable201, getConfigurationKey201 } from '../../../settings';
+import { Variable2, getVariableKey } from '../../../settings';
 
 const handleSetVariables: ChargeStationEventHandler<
   SetVariablesRequest,
@@ -11,7 +11,7 @@ const handleSetVariables: ChargeStationEventHandler<
   const { setVariableData } = callMessageBody;
 
   for (const variable of setVariableData) {
-    const v: Variable201 = {
+    const v: Variable2 = {
       component: variable.component,
       variable: variable.variable,
       // not required for fetching the configuration key
@@ -19,7 +19,7 @@ const handleSetVariables: ChargeStationEventHandler<
       variableAttribute: [],
     };
 
-    const key = getConfigurationKey201(v);
+    const key = getVariableKey(v);
     chargepoint.configuration.setVariable(key, variable);
   }
 

@@ -35,7 +35,7 @@ export default class SettingsModal extends React.Component {
   };
 
   static getDerivedStateFromProps({ configuration, settings }, prevState) {
-    if (configuration.getVersion() != prevState.currentVersion) {
+    if (configuration.getVersion() !== prevState.currentVersion) {
       return {
         ...prevState,
         config: configuration.variablesToKeyValueMap(),

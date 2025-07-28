@@ -5,7 +5,7 @@ import {
   GetVariableResultType,
   GetVariablesResponse,
 } from 'schemas/ocpp/2.0/GetVariablesResponse';
-import { Variable201, getConfigurationKey201 } from 'lib/settings';
+import { Variable2, getVariableKey } from 'lib/settings';
 
 const handleGetVariables: ChargeStationEventHandler<
   GetVariablesRequest,
@@ -16,7 +16,7 @@ const handleGetVariables: ChargeStationEventHandler<
   chargepoint.writeCallResult(callMessageId, {
     getVariableResult: getVariableData.map((vData): GetVariableResultType => {
       const value = chargepoint.configuration.getVariableValue(
-        getConfigurationKey201(vData as Variable201)
+        getVariableKey(vData as Variable2)
       );
 
       return {
