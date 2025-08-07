@@ -317,6 +317,11 @@ export const defaultVariableConfig16: Variable16[] = [
     value: true,
   },
   {
+    key: 'ClockAlignedDataInterval',
+    description: 'Size of the clock aligned interval for meter values',
+    value: 0,
+  },
+  {
     key: 'PaymentCurrency',
     description: 'Currency that payments should be made in',
     value: 'EUR',
