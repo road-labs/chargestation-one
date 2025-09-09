@@ -29,6 +29,7 @@ import handleReset from '../eventHandlers/ocpp-16/handle-reset';
 import handleSetChargingProfile from '../eventHandlers/ocpp-16/handle-set-charging-profile';
 import handleAuthorizeCallResultReceived from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-authorize-call-result-received';
 import handleDataTransfer from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-data-transfer';
+import handleUnlockConnector from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-unlock-connector';
 import handleGetInstalledCertificateIds from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-get-installed-certificate-ids';
 import handleUpdateFirmwareReceived from '../eventHandlers/ocpp-16/handle-update-firmware-received';
 import handleSignedUpdateFirmwareReceived from '../eventHandlers/ocpp-16/handle-signed-update-firmware-received';
@@ -83,6 +84,7 @@ export default {
   [e.ResetReceived]: [handleReset],
   [e.SetChargingProfileReceived]: [handleSetChargingProfile],
   [e.DataTransferReceived]: [handleDataTransfer],
+  [e.UnlockConnectorReceived]: [handleUnlockConnector],
   [e.GetInstalledCertificatedIdsReceived]: [handleGetInstalledCertificateIds],
   [e.UpdateFirmwareReceived]: [handleUpdateFirmwareReceived],
   [e.TriggerMessageReceived]: [handleTriggerMessageReceived],

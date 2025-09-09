@@ -30,6 +30,7 @@ import handleGetInstalledCertificateIds from 'lib/ChargeStation/eventHandlers/oc
 import handleUpdateFirmwareReceived from '../eventHandlers/ocpp-20/handle-update-firmware-received';
 import handleTriggerMessageReceived from '../eventHandlers/ocpp-20/handle-trigger-message-received';
 import sendAuthorizeOrStartTransaction from 'lib/ChargeStation/eventHandlers/ocpp-20/send-authorize-or-start-transaction';
+import handleUnlockConnector from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-unlock-connector';
 
 // This is the default configuration for OCPP 2.0.*
 // Each key represents an event, and the value represents an array of handlers that will be called when the event is emitted
@@ -67,6 +68,7 @@ export default {
   [e.ResetReceived]: [handleReset],
   [e.SetChargingProfileReceived]: [handleSetChargingProfile],
   [e.DataTransferReceived]: [handleDataTransfer],
+  [e.UnlockConnectorReceived]: [handleUnlockConnector],
   [e.GetInstalledCertificatedIdsReceived]: [handleGetInstalledCertificateIds],
   [e.UpdateFirmwareReceived]: [handleUpdateFirmwareReceived],
   [e.TriggerMessageReceived]: [handleTriggerMessageReceived],

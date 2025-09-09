@@ -23,6 +23,7 @@ export const EventTypes = {
   SetChargingProfileReceived: 'setChargingProfileReceived',
   DataTransferReceived: 'dataTransferReceived',
   DataTransferCallResultReceived: 'dataTransferCallResultReceived',
+  UnlockConnectorReceived: 'unlockConnectorReceived',
   GetInstalledCertificatedIdsReceived: 'getInstalledCertificateIdsReceived',
   UpdateFirmwareReceived: 'updateFirmwareReceived',
   TriggerMessageReceived: 'triggerMessageReceived',
