@@ -14,13 +14,12 @@ const handleUnlockConnector: ChargeStationEventHandler<
   }
 
   const response: UnlockConnectorResponse = {
-    status: 'Unlocked',
+    status: 'UnlockFailed',
   };
 
   if (chargepoint.hasRunningSession(callMessageBody.connectorId)) {
     await chargepoint.stopSession(callMessageBody.connectorId);
-  } else {
-    response.status = 'UnlockFailed';
+    response.status = 'Unlocked';
   }
 
   chargepoint.writeCallResult(callMessageId, response);
