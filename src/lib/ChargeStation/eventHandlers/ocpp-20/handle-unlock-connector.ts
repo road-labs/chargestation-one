@@ -17,6 +17,7 @@ const handleUnlockConnector: ChargeStationEventHandler<
   const response: UnlockConnectorResponse = {
     status: 'Unlocked',
   };
+
   if (chargepoint.hasRunningSession(callMessageBody.connectorId)) {
     await chargepoint.stopSession(callMessageBody.connectorId);
   } else {
