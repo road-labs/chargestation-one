@@ -70,6 +70,7 @@ const isEVBox = (settings: Settings) => settings.chargePointModel === 'evbox';
 const isDbt = (settings: Settings) => settings.chargePointModel === 'dbt';
 const isG2Mobility = (settings: Settings) =>
   settings.chargePointModel === 'g2mobility';
+const isAutel = (settings: Settings) => settings.chargePointModel === 'autel';
 
 export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
   {
@@ -418,6 +419,12 @@ export const defaultVariableConfig16: Variable16[] = [
     description: 'Billing specification',
     value: '(0;1)', // 1 EUR per kWh
     predicate: isDbt,
+  },
+  {
+    key: 'CustomPosIdtag',
+    description: 'Static id tag for sessions authorized via payment card',
+    value: '',
+    predicate: isAutel,
   },
   {
     key: 'SupportedFileTransferProtocols',
