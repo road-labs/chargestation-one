@@ -11,6 +11,7 @@ import DbtOCPP16 from './dbt-ocpp-16';
 import G2MobilityOCPP16 from 'lib/ChargeStation/configurations/g2mobility-ocpp-16';
 import NidecOCPP16 from 'lib/ChargeStation/configurations/nidec-ocpp-16';
 import AutelOCPP16 from 'lib/ChargeStation/configurations/autel-ocpp-16';
+import ABBOCPP16 from 'lib/ChargeStation/configurations/abb-ocpp-16';
 
 const options = {
   'default-ocpp1.6': DefaultOCPP16,
@@ -26,6 +27,7 @@ const options = {
   'g2mobility-ocpp1.6': G2MobilityOCPP16,
   'nidec-ocpp1.6': NidecOCPP16,
   'autel-ocpp1.6': AutelOCPP16,
+  'abb-ocpp1.6': ABBOCPP16,
 };
 
 export function getOCPPConfiguration(ocppVersion, model) {

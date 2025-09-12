@@ -24,6 +24,7 @@ export enum ChargeStationSetting {
   ETotemPerKWhAmount = 'eTotemPerKWhAmount', // nTPEConsoKWhCentimes
   G2MobilityIdTagPrefix = 'g2MobilityIdTagPrefix',
   MadicLafonSkipPreAuthorize = 'madicLafonSkipPreAuthorize',
+  AbbIdTagPrefix = 'abbIdTagPrefix',
 }
 
 enum SessionSetting {
@@ -71,6 +72,7 @@ const isDbt = (settings: Settings) => settings.chargePointModel === 'dbt';
 const isG2Mobility = (settings: Settings) =>
   settings.chargePointModel === 'g2mobility';
 const isAutel = (settings: Settings) => settings.chargePointModel === 'autel';
+const isAbb = (settings: Settings) => settings.chargePointModel === 'abb';
 
 export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
   {
@@ -226,6 +228,14 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     defaultValue: false,
     type: 'boolean',
     predicate: isMadicLafon,
+  },
+  {
+    key: ChargeStationSetting.AbbIdTagPrefix,
+    name: 'ABB idTag prefix',
+    description:
+      'The prefix to be used for idTags sent relating to payment terminal transactions',
+    defaultValue: '',
+    predicate: isAbb,
   },
 ];
 
