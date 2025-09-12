@@ -42,6 +42,7 @@ export interface Settings {
   eTotemPerKWhAmount: number;
   g2MobilityIdTagPrefix: string;
   madicLafonSkipPreAuthorize: boolean;
+  abbIdTagPrefix: string;
 }
 
 interface CallLogItem {
