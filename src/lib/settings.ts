@@ -73,6 +73,7 @@ const isG2Mobility = (settings: Settings) =>
   settings.chargePointModel === 'g2mobility';
 const isAutel = (settings: Settings) => settings.chargePointModel === 'autel';
 const isAbb = (settings: Settings) => settings.chargePointModel === 'abb';
+const isIes = (settings: Settings) => settings.chargePointModel === 'ies';
 
 export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
   {
@@ -435,6 +436,24 @@ export const defaultVariableConfig16: Variable16[] = [
     description: 'Static id tag for sessions authorized via payment card',
     value: '',
     predicate: isAutel,
+  },
+  {
+    key: 'PaymentType',
+    description: 'IES payment mode',
+    value: '0',
+    predicate: isIes,
+  },
+  {
+    key: 'ForceAuthorizeId',
+    description: 'IES static id tag',
+    value: '',
+    predicate: isIes,
+  },
+  {
+    key: 'SendPaymentReceipts',
+    description: 'IES receipt configuration',
+    value: 'None',
+    predicate: isIes,
   },
   {
     key: 'SupportedFileTransferProtocols',
