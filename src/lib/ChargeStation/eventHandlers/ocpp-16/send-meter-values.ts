@@ -16,7 +16,7 @@ const sendMeterValues: ChargeStationEventHandler = async ({
         timestamp: now.toISOString(),
         sampledValue: [
           {
-            value: session.kwhElapsed.toFixed(5),
+            value: session.kwhElapsed.toFixed(3),
             context: 'Sample.Periodic',
             measurand: 'Energy.Active.Import.Register',
             location: 'Outlet',
