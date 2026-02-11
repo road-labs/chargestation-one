@@ -46,7 +46,7 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
           timestamp: startTime,
           sampledValue: [
             {
-              value: Math.round(session.kwhElapsed * 1000),
+              value: session.kwhElapsed.toFixed(3),
               context: 'Transaction.Begin',
               unitOfMeasure: { unit: 'kWh' },
             },

@@ -54,7 +54,7 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
           timestamp: session.stopTime.toISOString(),
           sampledValue: [
             {
-              value: session.kwhElapsed.toString(),
+              value: session.kwhElapsed.toFixed(3),
               context: 'Transaction.End',
               format: 'Raw',
               measurand: 'Energy.Active.Import.Register',
