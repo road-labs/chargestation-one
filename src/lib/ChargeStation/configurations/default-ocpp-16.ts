@@ -50,7 +50,10 @@ export default {
   [e.HeartbeatCallResultReceived]: [handleHeartbeatCallResultReceived],
   [e.HeartbeatAccepted]: [sendHeartbeatDelayed],
   [e.SessionStartInitiated]: [sendAuthorizeOrStartTransaction],
-  [e.SessionStopInitiated]: [sendStopTransaction],
+  [e.SessionStopInitiated]: [
+    sendStatusNotificationFinishing,
+    sendStopTransaction,
+  ],
   [e.AuthorizeCallResultReceived]: [handleAuthorizeCallResultReceived],
   [e.AuthorizationFailed]: [handleTokenRejection],
   [e.AuthorizationAccepted]: [sendStartTransaction],
@@ -68,7 +71,6 @@ export default {
     handleStopTransactionCallResultReceived,
   ],
   [e16.StopTransactionAccepted]: [
-    sendStatusNotificationFinishing,
     sendStatusNotificationAvailable,
     handleTransactionStoppedUI,
   ],

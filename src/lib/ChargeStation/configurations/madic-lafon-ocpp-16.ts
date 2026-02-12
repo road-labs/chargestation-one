@@ -3,6 +3,7 @@ import { EventTypes as e } from 'lib/ChargeStation/eventHandlers/event-types';
 import sendAuthorizeOrStartTransaction from 'lib/ChargeStation/eventHandlers/ocpp-16/send-authorize-or-start-transaction';
 import overrideSessionUid from 'lib/ChargeStation/eventHandlers/ocpp-16/madic-lafon/override-session-uid';
 import sendStopTransactionWithCost from 'lib/ChargeStation/eventHandlers/ocpp-16/madic-lafon/session-stop-initiated';
+import sendStatusNotificationFinishing from 'lib/ChargeStation/eventHandlers/ocpp-16/send-status-notification-finishing';
 
 export default {
   ...DefaultOCPP16,
@@ -10,5 +11,8 @@ export default {
     overrideSessionUid,
     sendAuthorizeOrStartTransaction,
   ],
-  [e.SessionStopInitiated]: [sendStopTransactionWithCost],
+  [e.SessionStopInitiated]: [
+    sendStatusNotificationFinishing,
+    sendStopTransactionWithCost,
+  ],
 };

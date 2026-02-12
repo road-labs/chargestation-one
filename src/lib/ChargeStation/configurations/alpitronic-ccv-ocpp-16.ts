@@ -20,7 +20,6 @@ export default {
   [e.DataTransferCallResultReceived]: [handleDataTransferCallResultReceived],
   [e.AuthorizeCallResultReceived]: [],
   [e16.StopTransactionAccepted]: [
-    sendStatusNotificationFinishing,
     sendStatusNotificationAvailable,
     handleTransactionStoppedUI,
     sendDataTransferReceipt,
