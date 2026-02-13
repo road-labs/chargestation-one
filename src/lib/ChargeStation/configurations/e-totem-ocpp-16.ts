@@ -21,7 +21,6 @@ export default {
   ],
   [e.DataTransferCallResultReceived]: [processDataTransferResult],
   [e16.StopTransactionAccepted]: [
-    sendStatusNotificationFinishing,
     sendStatusNotificationAvailable,
     calculateCostsAndSendReceipt,
     handleTransactionStoppedUI,

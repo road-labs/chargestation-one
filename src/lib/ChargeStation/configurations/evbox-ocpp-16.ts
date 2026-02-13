@@ -17,7 +17,6 @@ export default {
     sendAuthorizeOrStartTransaction,
   ],
   [e16.StopTransactionAccepted]: [
-    sendStatusNotificationFinishing,
     sendStatusNotificationAvailable,
     calculateCostsAndSendReceipt,
     handleTransactionStoppedUI,
