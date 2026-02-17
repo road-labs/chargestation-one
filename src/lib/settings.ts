@@ -25,6 +25,7 @@ export enum ChargeStationSetting {
   G2MobilityIdTagPrefix = 'g2MobilityIdTagPrefix',
   MadicLafonSkipPreAuthorize = 'madicLafonSkipPreAuthorize',
   AbbIdTagPrefix = 'abbIdTagPrefix',
+  MeterValueUnit = 'meterValueUnit',
 }
 
 enum SessionSetting {
@@ -58,6 +59,29 @@ export const OCPPVersion = {
   ocpp21: 'ocpp2.1',
 } as const;
 export type OCPPVersion = (typeof OCPPVersion)[keyof typeof OCPPVersion];
+
+export const MeterValueUnit = {
+  kWh: 'kWh',
+  Wh: 'Wh',
+} as const;
+export type MeterValueUnit =
+  (typeof MeterValueUnit)[keyof typeof MeterValueUnit];
+
+export function formatMeterReading(
+  kwhValue: number,
+  unit: MeterValueUnit | string
+): { value: string; unit: MeterValueUnit } {
+  if (unit === MeterValueUnit.Wh) {
+    return {
+      value: Math.round(kwhValue * 1000).toString(),
+      unit: 'Wh',
+    };
+  }
+  return {
+    value: kwhValue.toFixed(3),
+    unit: 'kWh',
+  };
+}
 
 const isSicharge = (settings: Settings) =>
   settings.chargePointModel === 'sicharge';
@@ -152,6 +176,15 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     ],
     defaultValue: '',
     type: 'string',
+  },
+  {
+    key: ChargeStationSetting.MeterValueUnit,
+    input: 'dropdown',
+    options: [MeterValueUnit.kWh, MeterValueUnit.Wh],
+    name: 'Meter Value Unit',
+    description:
+      'Unit for energy meter readings in OCPP 1.6 MeterValues and OCPP 2.x TransactionEvent messages. Does not affect OCPP 1.6 StartTransaction and StopTransaction readings, which are always in Wh.',
+    defaultValue: MeterValueUnit.kWh,
   },
   {
     key: ChargeStationSetting.ETotemTerminalMode,

@@ -9,6 +9,8 @@ interface SummarizeCommandParams {
     meterValue?: {
       sampledValue: {
         value: number;
+        unit?: string;
+        unitOfMeasure?: { unit?: string };
       }[];
     }[];
   };
@@ -27,10 +29,23 @@ export function summarizeCommandParams({
       return { uid: idTag };
     case 'StatusNotification':
       return { status };
-    case 'MeterValues':
+    case 'MeterValues': {
+      const sampled = meterValue?.[0]?.sampledValue[0];
+      const unit = sampled?.unit ?? 'Wh';
       return {
-        kwh: meterValue ? meterValue[0]?.sampledValue[0]?.value : undefined,
+        [unit]: sampled?.value,
       };
+    }
+    case 'TransactionEvent': {
+      const energyMeter = meterValue
+        ?.filter((mv) => mv.sampledValue[0]?.unitOfMeasure?.unit !== 'Percent')
+        .pop();
+      const sampled = energyMeter?.sampledValue[0];
+      const unit = sampled?.unitOfMeasure?.unit ?? 'Wh';
+      return {
+        [unit]: sampled?.value,
+      };
+    }
   }
 
   return null;

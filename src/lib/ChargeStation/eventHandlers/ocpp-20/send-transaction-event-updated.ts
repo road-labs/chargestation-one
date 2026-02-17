@@ -1,5 +1,6 @@
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 import { TransactionEventRequest } from 'schemas/ocpp/2.0/TransactionEventRequest';
+import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
 import clock from '../../clock';
 
 const sendTransationEventUpdated: ChargeStationEventHandler = ({
@@ -7,6 +8,10 @@ const sendTransationEventUpdated: ChargeStationEventHandler = ({
   session,
 }) => {
   const now = clock.now();
+  const meterReading = formatMeterReading(
+    session.kwhElapsed,
+    chargepoint.getSetting(ChargeStationSetting.MeterValueUnit) as string
+  );
 
   chargepoint.writeCall<TransactionEventRequest>('TransactionEvent', {
     eventType: 'Updated',
@@ -22,11 +27,11 @@ const sendTransationEventUpdated: ChargeStationEventHandler = ({
         timestamp: now.toISOString(),
         sampledValue: [
           {
-            value: Number(session.kwhElapsed.toFixed(3)),
+            value: Number(meterReading.value),
             context: 'Sample.Periodic',
             measurand: 'Energy.Active.Import.Register',
             location: 'Outlet',
-            unitOfMeasure: { unit: 'kWh' },
+            unitOfMeasure: { unit: meterReading.unit },
           },
         ],
       },

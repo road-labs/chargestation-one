@@ -1,6 +1,7 @@
 import { sleep } from '../../../../utils/csv';
 
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
+import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
 
 import clock from '../../clock';
 
@@ -16,6 +17,12 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
   if (!session.stopTime) {
     throw new Error('stopTime must be set');
   }
+
+  const meterUnit = chargepoint.getSetting(
+    ChargeStationSetting.MeterValueUnit
+  ) as string;
+  const beginMeter = formatMeterReading(0, meterUnit);
+  const endMeter = formatMeterReading(session.kwhElapsed, meterUnit);
 
   chargepoint.writeCall(
     'TransactionEvent',
@@ -33,9 +40,9 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
           timestamp: session.startTime.toISOString(),
           sampledValue: [
             {
-              value: 0.0,
+              value: Number(beginMeter.value),
               context: 'Transaction.Begin',
-              unitOfMeasure: { unit: 'kWh' },
+              unitOfMeasure: { unit: beginMeter.unit },
             },
           ],
         },
@@ -43,9 +50,9 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
           timestamp: session.stopTime.toISOString(),
           sampledValue: [
             {
-              value: session.kwhElapsed.toFixed(3),
+              value: Number(endMeter.value),
               context: 'Transaction.End',
-              unitOfMeasure: { unit: 'kWh' },
+              unitOfMeasure: { unit: endMeter.unit },
             },
           ],
         },
