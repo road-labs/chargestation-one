@@ -3,6 +3,7 @@ import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 import { StopTransactionRequest } from 'schemas/ocpp/1.6/StopTransaction';
 import { signMeterReadings } from 'lib/ChargeStation/ocmf';
 import ChargeStation, { Session } from 'lib/ChargeStation';
+import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
 
 type Ocpp16SampledValue =
   StopTransactionRequest['transactionData'][0]['sampledValue'][0];
@@ -25,6 +26,12 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
     'StopTransactionSignatureFormat'
   );
 
+  const meterUnit = chargepoint.getSetting(
+    ChargeStationSetting.MeterValueUnit
+  ) as string;
+  const startReading = formatMeterReading(0, meterUnit);
+  const endReading = formatMeterReading(session.kwhElapsed, meterUnit);
+
   chargepoint.writeCall<StopTransactionRequest>(
     'StopTransaction',
     {
@@ -38,12 +45,12 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
           timestamp: session.startTime.toISOString(),
           sampledValue: [
             {
-              value: '0',
+              value: startReading.value,
               context: 'Transaction.Begin',
               format: 'Raw',
               measurand: 'Energy.Active.Import.Register',
               location: 'Outlet',
-              unit: 'kWh',
+              unit: startReading.unit,
             },
             ...(havePrivateKey && ocmfSigFormat === 'SR'
               ? [await signOcpp16TransactionStart(session, chargepoint)]
@@ -54,12 +61,12 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
           timestamp: session.stopTime.toISOString(),
           sampledValue: [
             {
-              value: session.kwhElapsed.toFixed(3),
+              value: endReading.value,
               context: 'Transaction.End',
               format: 'Raw',
               measurand: 'Energy.Active.Import.Register',
               location: 'Outlet',
-              unit: 'kWh',
+              unit: endReading.unit,
             },
             {
               value: session.stateOfCharge.toString(),

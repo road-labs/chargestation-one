@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { sleep } from 'utils/csv';
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
+import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
 
 import clock from '../../clock';
 
@@ -29,6 +30,11 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
   session.transactionId = transactionId;
   session.isStartingSession = true;
 
+  const meterReading = formatMeterReading(
+    session.kwhElapsed,
+    chargepoint.getSetting(ChargeStationSetting.MeterValueUnit) as string
+  );
+
   chargepoint.writeCall(
     'TransactionEvent',
     {
@@ -46,9 +52,9 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
           timestamp: startTime,
           sampledValue: [
             {
-              value: session.kwhElapsed.toFixed(3),
+              value: Number(meterReading.value),
               context: 'Transaction.Begin',
-              unitOfMeasure: { unit: 'kWh' },
+              unitOfMeasure: { unit: meterReading.unit },
             },
           ],
         },

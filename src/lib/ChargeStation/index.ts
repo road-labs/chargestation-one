@@ -43,6 +43,7 @@ export interface Settings {
   g2MobilityIdTagPrefix: string;
   madicLafonSkipPreAuthorize: boolean;
   abbIdTagPrefix: string;
+  meterValueUnit: string;
 }
 
 interface CallLogItem {
