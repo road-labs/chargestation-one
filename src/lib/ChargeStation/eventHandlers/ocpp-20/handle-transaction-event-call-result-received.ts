@@ -36,6 +36,7 @@ const handleTransactionEventCallResultReceived: ChargeStationEventHandler<
         );
         return;
       }
+      chargepoint.sessions[session.connectorId].isStartingSession = false;
       await sleep(1000);
       let timeSince = clock.now();
       session.tickInterval = clock.setInterval(() => {
