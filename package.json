@@ -19,8 +19,8 @@
   "dependencies": {
     "@bedrockio/config": "^2.0.4",
     "@bedrockio/instrumentation": "^1.4.14",
-    "@road-labs/ocmf": "^0.0.7",
-    "@road-labs/ocmf-crypto-noble": "^0.0.7",
+    "@road-labs/ocmf": "^0.0.9",
+    "@road-labs/ocmf-crypto-noble": "^0.0.9",
     "@types/uuid": "^9.0.6",
     "date-fns": "^4.1.0",
     "express-to-koa": "^2.0.0",
@@ -93,8 +93,8 @@
     "yargs": "^15.3.1"
   },
   "volta": {
-    "node": "20.9.0",
-    "yarn": "1.22.17"
+    "node": "22.22.0",
+    "yarn": "1.22.22"
   },
   "prettier": {
     "singleQuote": true,
