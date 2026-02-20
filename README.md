@@ -38,7 +38,7 @@ By default, the application is available at http://localhost:2100/
 
 A small number of environment variables can be used to override defaults used at runtime:
 
-- `SERVER_HOS`T` - Host to bind to, defaults to `"0.0.0.0"`
+- `SERVER_HOST` - Host to bind to, defaults to `"0.0.0.0"`
 - `SERVER_PORT` - Port to bind to, defaults to `2100`
 - `ENV_NAME` - Deployment environment name, default `development`
 - `APP_NAME` - Default product name to be used in views
