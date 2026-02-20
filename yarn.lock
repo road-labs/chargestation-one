@@ -1930,17 +1930,17 @@
     "@emnapi/runtime" "^1.4.3"
     "@tybys/wasm-util" "^0.10.0"
 
-"@noble/curves@^1.9.2":
-  version "1.9.2"
-  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.9.2.tgz#73388356ce733922396214a933ff7c95afcef911"
-  integrity sha512-HxngEd2XUcg9xi20JkwlLCtYwfoFw4JGkuZpT+WlsPD4gB/cxkvTD8fSsoAnphGZhFdZYKeQIPCuFlWPm1uE0g==
+"@noble/curves@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-2.0.1.tgz#64ba8bd5e8564a02942655602515646df1cdb3ad"
+  integrity sha512-vs1Az2OOTBiP4q0pwjW5aF0xp9n4MxVrmkFBxc6EKZc6ddYx5gaZiAsZoq0uRRXWbi3AT/sBqn05eRPtn1JCPw==
   dependencies:
-    "@noble/hashes" "1.8.0"
+    "@noble/hashes" "2.0.1"
 
-"@noble/hashes@1.8.0", "@noble/hashes@^1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.8.0.tgz#cee43d801fcef9644b11b8194857695acd5f815a"
-  integrity sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==
+"@noble/hashes@2.0.1", "@noble/hashes@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-2.0.1.tgz#fc1a928061d1232b0a52bb754393c37a5216c89e"
+  integrity sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2303,31 +2303,31 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@road-labs/ocmf-crypto-noble@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@road-labs/ocmf-crypto-noble/-/ocmf-crypto-noble-0.0.7.tgz#3bd3eecb6cdaf1e96a095d3bf8b27610be69eb2e"
-  integrity sha512-Ch8DVOB1go8YwJANckvq7/b6aIEo0fiR26mV24BF1zZRqajzKyA6lzXoN8NYZBR5Xfg6dJDMtQRKUAn1LOL21g==
+"@road-labs/ocmf-crypto-noble@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@road-labs/ocmf-crypto-noble/-/ocmf-crypto-noble-0.0.9.tgz#dd3446baa576cb63c3db1bb222153a21ba7a1d15"
+  integrity sha512-oBDfEqjYGQNQ8Fc5DHH9i99KmzsYxYOBhp4dHx4apOkHwSoGfp4bAf/gkrp+D5STAFNC4mpYBihr/MJkoAmvKw==
   dependencies:
-    "@noble/curves" "^1.9.2"
-    "@noble/hashes" "^1.8.0"
-    "@road-labs/ocmf-crypto" "0.0.7"
+    "@noble/curves" "^2.0.1"
+    "@noble/hashes" "^2.0.1"
+    "@road-labs/ocmf-crypto" "0.0.9"
 
-"@road-labs/ocmf-crypto@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@road-labs/ocmf-crypto/-/ocmf-crypto-0.0.7.tgz#e09a271df917d081f82880ee8babb8dffc29f65f"
-  integrity sha512-qNvVDahKkqjcNgYjeWPsZVb0KBkmj9/aDnsxX+334VZNYbBL4aiaq5tgfF7h8jbM3cfGNbDKfH9aAWmF0yKy/Q==
+"@road-labs/ocmf-crypto@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@road-labs/ocmf-crypto/-/ocmf-crypto-0.0.9.tgz#9d2d6b5ac19e9feffe91174ecbf5ca917002645d"
+  integrity sha512-yt6qKPikR89iqy4GMO/uUWT3spnU1X0MyeeZ29/dFMz/vuXhq2bLUVbI1hZ8X/7XDXxIY8kozxYwH+XYobfRvQ==
   dependencies:
     "@peculiar/asn1-ecc" "^2.3.15"
     "@peculiar/asn1-pkcs8" "^2.3.15"
     "@peculiar/asn1-schema" "^2.3.15"
     "@peculiar/asn1-x509" "^2.3.15"
 
-"@road-labs/ocmf@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@road-labs/ocmf/-/ocmf-0.0.7.tgz#4961b706118116a3a0efdf516a10ff79026d9c49"
-  integrity sha512-JMd3UcEKNsZXfJVh5wWlME4E6gBdml8OhugSH9ib2QpIVr/Rw/U4djR6Smv0u8sSeNJEeFnV7hivfOmE0yVUmQ==
+"@road-labs/ocmf@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@road-labs/ocmf/-/ocmf-0.0.9.tgz#d6eeee9193e0f0e240cb410bbc23f9dddf9ae639"
+  integrity sha512-KwThaD7eUqyqM1fnH9HN96AhHs/eloGa9lqgSD2CrjxzzpTQvonjbIxUNCOo4Z/c5/jOjzccecTf+dAcBXx/LA==
   dependencies:
-    "@road-labs/ocmf-crypto" "0.0.7"
+    "@road-labs/ocmf-crypto" "0.0.9"
     date-fns "^4.1.0"
 
 "@semantic-ui-react/event-stack@^3.1.3":
