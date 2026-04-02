@@ -22,7 +22,7 @@ interface SummarizeCommandParams {
 const measurandLabels: Record<string, string> = {
   'Energy.Active.Import.Register': 'energy',
   'Power.Active.Import': 'power',
-  'SoC': 'soc',
+  SoC: 'soc',
 };
 
 function summarizeMeterValues(
@@ -37,9 +37,7 @@ function summarizeMeterValues(
       const rawUnit = sampled.unit ?? sampled.unitOfMeasure?.unit ?? '';
       const unit = rawUnit === 'Percent' ? '%' : rawUnit;
       const value =
-        label === 'soc'
-          ? Number(sampled.value).toFixed(1)
-          : sampled.value;
+        label === 'soc' ? Number(sampled.value).toFixed(1) : sampled.value;
       result[label] = `${value}${unit}`;
     }
   }
