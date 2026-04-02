@@ -14,7 +14,9 @@ const sendTransationEventUpdated: ChargeStationEventHandler = ({
   const now = clock.now();
   const meterReading = formatEnergyMeterReading(
     session.kwhElapsed,
-    chargepoint.getSetting(ChargeStationSetting.EnergyActiveImportUnit) as string
+    chargepoint.getSetting(
+      ChargeStationSetting.EnergyActiveImportUnit
+    ) as string
   );
   const powerReading = formatPowerMeterReading(
     session.currentPowerKw,

@@ -32,7 +32,9 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
 
   const meterReading = formatEnergyMeterReading(
     session.kwhElapsed,
-    chargepoint.getSetting(ChargeStationSetting.EnergyActiveImportUnit) as string
+    chargepoint.getSetting(
+      ChargeStationSetting.EnergyActiveImportUnit
+    ) as string
   );
 
   chargepoint.writeCall(
