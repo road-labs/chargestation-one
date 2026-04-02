@@ -34,7 +34,7 @@ function summarizeMeterValues(
     const label = measurandLabels[sampled.measurand ?? ''];
     if (label) {
       const unit = sampled.unit ?? sampled.unitOfMeasure?.unit ?? '';
-      result[label] = `${sampled.value}${unit ? unit : ''}`;
+      result[label] = `${sampled.value}${unit}`;
     }
   }
   return Object.keys(result).length > 0 ? result : null;
