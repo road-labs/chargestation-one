@@ -43,7 +43,8 @@ export interface Settings {
   g2MobilityIdTagPrefix: string;
   madicLafonSkipPreAuthorize: boolean;
   abbIdTagPrefix: string;
-  meterValueUnit: string;
+  energyActiveImportUnit: string;
+  powerActiveImportUnit: string;
 }
 
 interface CallLogItem {
@@ -521,6 +522,10 @@ export class Session {
 
   get stateOfCharge(): number {
     return this.carBatteryStateOfCharge;
+  }
+
+  get currentPowerKw(): number {
+    return this.suspended ? 0 : this.maxPowerKw;
   }
 
   now(): Date {

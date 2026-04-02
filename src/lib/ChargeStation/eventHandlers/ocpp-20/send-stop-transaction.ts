@@ -1,7 +1,7 @@
 import { sleep } from '../../../../utils/csv';
 
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
-import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
+import { ChargeStationSetting, formatEnergyMeterReading } from 'lib/settings';
 
 import clock from '../../clock';
 
@@ -19,10 +19,10 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
   }
 
   const meterUnit = chargepoint.getSetting(
-    ChargeStationSetting.MeterValueUnit
+    ChargeStationSetting.EnergyActiveImportUnit
   ) as string;
-  const beginMeter = formatMeterReading(0, meterUnit);
-  const endMeter = formatMeterReading(session.kwhElapsed, meterUnit);
+  const beginMeter = formatEnergyMeterReading(0, meterUnit);
+  const endMeter = formatEnergyMeterReading(session.kwhElapsed, meterUnit);
 
   chargepoint.writeCall(
     'TransactionEvent',
