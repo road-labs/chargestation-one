@@ -25,7 +25,8 @@ export enum ChargeStationSetting {
   G2MobilityIdTagPrefix = 'g2MobilityIdTagPrefix',
   MadicLafonSkipPreAuthorize = 'madicLafonSkipPreAuthorize',
   AbbIdTagPrefix = 'abbIdTagPrefix',
-  MeterValueUnit = 'meterValueUnit',
+  EnergyActiveImportUnit = 'energyActiveImportUnit',
+  PowerActiveImportUnit = 'powerActiveImportUnit',
 }
 
 enum SessionSetting {
@@ -60,18 +61,25 @@ export const OCPPVersion = {
 } as const;
 export type OCPPVersion = (typeof OCPPVersion)[keyof typeof OCPPVersion];
 
-export const MeterValueUnit = {
+export const EnergyActiveImportUnit = {
   kWh: 'kWh',
   Wh: 'Wh',
 } as const;
-export type MeterValueUnit =
-  (typeof MeterValueUnit)[keyof typeof MeterValueUnit];
+export type EnergyActiveImportUnit =
+  (typeof EnergyActiveImportUnit)[keyof typeof EnergyActiveImportUnit];
 
-export function formatMeterReading(
+export const PowerActiveImportUnit = {
+  kW: 'kW',
+  W: 'W',
+} as const;
+export type PowerActiveImportUnit =
+  (typeof PowerActiveImportUnit)[keyof typeof PowerActiveImportUnit];
+
+export function formatEnergyMeterReading(
   kwhValue: number,
-  unit: MeterValueUnit | string
-): { value: string; unit: MeterValueUnit } {
-  if (unit === MeterValueUnit.Wh) {
+  unit: EnergyActiveImportUnit | string
+): { value: string; unit: EnergyActiveImportUnit } {
+  if (unit === EnergyActiveImportUnit.Wh) {
     return {
       value: Math.round(kwhValue * 1000).toString(),
       unit: 'Wh',
@@ -80,6 +88,22 @@ export function formatMeterReading(
   return {
     value: kwhValue.toFixed(3),
     unit: 'kWh',
+  };
+}
+
+export function formatPowerMeterReading(
+  kwValue: number,
+  unit: PowerActiveImportUnit | string
+): { value: string; unit: PowerActiveImportUnit } {
+  if (unit === PowerActiveImportUnit.W) {
+    return {
+      value: Math.round(kwValue * 1000).toString(),
+      unit: 'W',
+    };
+  }
+  return {
+    value: kwValue.toFixed(3),
+    unit: 'kW',
   };
 }
 
@@ -178,13 +202,22 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     type: 'string',
   },
   {
-    key: ChargeStationSetting.MeterValueUnit,
+    key: ChargeStationSetting.EnergyActiveImportUnit,
     input: 'dropdown',
-    options: [MeterValueUnit.kWh, MeterValueUnit.Wh],
-    name: 'Meter Value Unit',
+    options: [EnergyActiveImportUnit.kWh, EnergyActiveImportUnit.Wh],
+    name: 'Energy Meter Value Unit',
     description:
-      'Unit for energy meter readings in OCPP 1.6 MeterValues and OCPP 2.x TransactionEvent messages. Does not affect OCPP 1.6 StartTransaction and StopTransaction readings, which are always in Wh.',
-    defaultValue: MeterValueUnit.kWh,
+      'Unit for Energy.Active.Import.Register meter readings in OCPP 1.6 MeterValues and OCPP 2.x TransactionEvent messages. Does not affect OCPP 1.6 StartTransaction and StopTransaction readings, which are always in Wh.',
+    defaultValue: EnergyActiveImportUnit.kWh,
+  },
+  {
+    key: ChargeStationSetting.PowerActiveImportUnit,
+    input: 'dropdown',
+    options: [PowerActiveImportUnit.kW, PowerActiveImportUnit.W],
+    name: 'Power Meter Value Unit',
+    description:
+      'Unit for Power.Active.Import meter readings in OCPP 1.6 MeterValues and OCPP 2.x TransactionEvent messages.',
+    defaultValue: PowerActiveImportUnit.kW,
   },
   {
     key: ChargeStationSetting.ETotemTerminalMode,

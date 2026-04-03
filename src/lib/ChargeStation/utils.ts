@@ -5,10 +5,13 @@ interface SummarizeCommandParams {
     meterStart?: number;
     meterStop?: number;
     idTag?: string;
+    idToken?: { idToken?: string };
     status?: string;
+    connectorStatus?: string;
     meterValue?: {
       sampledValue: {
         value: number;
+        measurand?: string;
         unit?: string;
         unitOfMeasure?: { unit?: string };
       }[];
@@ -16,36 +19,56 @@ interface SummarizeCommandParams {
   };
 }
 
+const measurandLabels: Record<string, string> = {
+  'Energy.Active.Import.Register': 'energy',
+  'Power.Active.Import': 'power',
+  SoC: 'soc',
+};
+
+function summarizeMeterValues(
+  meterValue: SummarizeCommandParams['params']['meterValue']
+) {
+  const result: Record<string, string> = {};
+  for (const mv of meterValue ?? []) {
+    const sampled = mv.sampledValue[0];
+    if (!sampled) continue;
+    const label = measurandLabels[sampled.measurand ?? ''];
+    if (label) {
+      const rawUnit = sampled.unit ?? sampled.unitOfMeasure?.unit ?? '';
+      const unit = rawUnit === 'Percent' ? '%' : rawUnit;
+      const value =
+        label === 'soc' ? Number(sampled.value).toFixed(1) : sampled.value;
+      result[label] = `${value}${unit}`;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : null;
+}
+
 export function summarizeCommandParams({
   method,
-  params: { idTag, meterStart, meterStop, meterValue, status },
+  params: {
+    idTag,
+    idToken,
+    meterStart,
+    meterStop,
+    meterValue,
+    status,
+    connectorStatus,
+  },
 }: SummarizeCommandParams) {
+  const uid = idTag ?? idToken?.idToken;
   switch (method) {
     case 'StartTransaction':
-      return { meterStart, uid: idTag };
+      return { meterStart, uid };
     case 'StopTransaction':
-      return { meterStop, uid: idTag };
+      return { meterStop, uid };
     case 'Authorize':
-      return { uid: idTag };
+      return { uid };
     case 'StatusNotification':
-      return { status };
-    case 'MeterValues': {
-      const sampled = meterValue?.[0]?.sampledValue[0];
-      const unit = sampled?.unit ?? 'Wh';
-      return {
-        [unit]: sampled?.value,
-      };
-    }
-    case 'TransactionEvent': {
-      const energyMeter = meterValue
-        ?.filter((mv) => mv.sampledValue[0]?.unitOfMeasure?.unit !== 'Percent')
-        .pop();
-      const sampled = energyMeter?.sampledValue[0];
-      const unit = sampled?.unitOfMeasure?.unit ?? 'Wh';
-      return {
-        [unit]: sampled?.value,
-      };
-    }
+      return { status: status ?? connectorStatus };
+    case 'MeterValues':
+    case 'TransactionEvent':
+      return summarizeMeterValues(meterValue);
   }
 
   return null;

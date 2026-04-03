@@ -3,7 +3,7 @@ import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 import { StopTransactionRequest } from 'schemas/ocpp/1.6/StopTransaction';
 import { signMeterReadings } from 'lib/ChargeStation/ocmf';
 import ChargeStation, { Session } from 'lib/ChargeStation';
-import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
+import { ChargeStationSetting, formatEnergyMeterReading } from 'lib/settings';
 
 type Ocpp16SampledValue =
   StopTransactionRequest['transactionData'][0]['sampledValue'][0];
@@ -27,10 +27,10 @@ const sendStopTransaction: ChargeStationEventHandler = async ({
   );
 
   const meterUnit = chargepoint.getSetting(
-    ChargeStationSetting.MeterValueUnit
+    ChargeStationSetting.EnergyActiveImportUnit
   ) as string;
-  const startReading = formatMeterReading(0, meterUnit);
-  const endReading = formatMeterReading(session.kwhElapsed, meterUnit);
+  const startReading = formatEnergyMeterReading(0, meterUnit);
+  const endReading = formatEnergyMeterReading(session.kwhElapsed, meterUnit);
 
   chargepoint.writeCall<StopTransactionRequest>(
     'StopTransaction',

@@ -1,16 +1,26 @@
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 import { MeterValuesRequest } from 'schemas/ocpp/1.6/MeterValues';
 import clock from 'lib/ChargeStation/clock';
-import { ChargeStationSetting, formatMeterReading } from 'lib/settings';
+import {
+  ChargeStationSetting,
+  formatEnergyMeterReading,
+  formatPowerMeterReading,
+} from 'lib/settings';
 
 const sendMeterValues: ChargeStationEventHandler = async ({
   chargepoint,
   session,
 }) => {
   const now = clock.now();
-  const meterReading = formatMeterReading(
+  const meterReading = formatEnergyMeterReading(
     session.kwhElapsed,
-    chargepoint.getSetting(ChargeStationSetting.MeterValueUnit) as string
+    chargepoint.getSetting(
+      ChargeStationSetting.EnergyActiveImportUnit
+    ) as string
+  );
+  const powerReading = formatPowerMeterReading(
+    session.currentPowerKw,
+    chargepoint.getSetting(ChargeStationSetting.PowerActiveImportUnit) as string
   );
 
   chargepoint.writeCall<MeterValuesRequest>('MeterValues', {
@@ -26,6 +36,18 @@ const sendMeterValues: ChargeStationEventHandler = async ({
             measurand: 'Energy.Active.Import.Register',
             location: 'Outlet',
             unit: meterReading.unit,
+          },
+        ],
+      },
+      {
+        timestamp: now.toISOString(),
+        sampledValue: [
+          {
+            value: powerReading.value,
+            context: 'Sample.Periodic',
+            measurand: 'Power.Active.Import',
+            location: 'Outlet',
+            unit: powerReading.unit,
           },
         ],
       },
