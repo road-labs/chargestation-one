@@ -17,19 +17,19 @@ Browser based charging station simulator with support for OCPP 1.6 and OCPP 2.0.
 
 ## Running
 
-When running locally, we recommend installing [volta](https://volta.sh/) to ensure the node and yarn versions are
+When running locally, we recommend installing [volta](https://volta.sh/) to ensure the node and pnpm versions are
 aligned with those used during active development.
 
 First install the required dependencies:
 
 ```
-yarn install
+pnpm install
 ```
 
 And then run:
 
 ```
-yarn run start
+pnpm start
 ```
 
 By default, the application is available at http://localhost:2100/

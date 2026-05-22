@@ -25,9 +25,9 @@ jobs:
       - name: Setup volta
         uses: volta-cli/action@5c175f92dea6f48441c436471e6479dbc192e194 # v4.2.1
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Run lint
-        run: yarn lint
+        run: pnpm lint
 
   build:
     name: Build
@@ -42,9 +42,9 @@ jobs:
       - name: Setup volta
         uses: volta-cli/action@5c175f92dea6f48441c436471e6479dbc192e194 # v4.2.1
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Create build
-        run: yarn run build
+        run: pnpm run build
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - name: Upload pages artifact

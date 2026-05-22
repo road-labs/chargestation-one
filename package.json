@@ -9,11 +9,9 @@
     "build": "NODE_ENV=production NODE_OPTIONS=\"--max-old-space-size=4096\" webpack",
     "start": "node ./serve/dev",
     "static": "node ./serve/static",
-    "lint": "eslint && yarn prettier --check .",
+    "lint": "eslint && prettier --check .",
     "test": "jest",
-    "generate": "cd ../../generator && yarn install && yarn generate",
-    "postinstall": "cd serve && yarn install",
-    "format": "yarn prettier --write .",
+    "format": "prettier --write .",
     "knip": "knip"
   },
   "dependencies": {
@@ -94,7 +92,7 @@
   },
   "volta": {
     "node": "22.22.0",
-    "yarn": "1.22.22"
+    "pnpm": "10.18.2"
   },
   "prettier": {
     "singleQuote": true,
@@ -110,5 +108,5 @@
       }
     ]
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "pnpm@10.18.2"
 }
