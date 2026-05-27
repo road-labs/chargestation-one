@@ -1060,11 +1060,10 @@ export function getDefaultSession() {
   return result;
 }
 
-interface VariableKeyValueMap
-  extends Map<{
-    key: string;
-    value: string | number;
-  }> {}
+interface VariableKeyValueMap extends Map<{
+  key: string;
+  value: string | number;
+}> {}
 
 export interface VariableConfiguration<Variable> {
   getOCPPIdentityString(): string;
@@ -1081,9 +1080,7 @@ export interface VariableConfiguration<Variable> {
   getVariableValue(key: string): string | number | null;
 }
 
-abstract class VariableConfiguration2
-  implements VariableConfiguration<Variable2>
-{
+abstract class VariableConfiguration2 implements VariableConfiguration<Variable2> {
   private variables: Map<Variable2> = {};
 
   constructor(

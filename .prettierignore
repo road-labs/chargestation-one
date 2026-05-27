@@ -3,5 +3,5 @@
 src/schemas
 .webpack-cache
 dist
-**/.yarn
+pnpm-lock.yaml
 src/semantic/

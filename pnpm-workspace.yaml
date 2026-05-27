@@ -1,0 +1,10 @@
+packages:
+  - . # The chargestation-one web app
+  - serve # The dev/static server colocated under serve/
+
+nodeLinker: hoisted
+
+minimumReleaseAge: 10080 # 7 days
+
+minimumReleaseAgeExclude:
+  - '@road-labs/*' # Allow fresh releases of our own packages
