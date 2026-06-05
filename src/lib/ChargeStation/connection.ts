@@ -16,17 +16,21 @@ type CallResult = [MessageType, string, unknown];
 type CallError = [MessageType, string, string, string, unknown];
 
 class Connection {
-  private ocppBaseUrl: string;
-  private ocppIdentity: string;
-  private version: string;
+  private readonly ocppBaseUrl: string;
+  private readonly ocppIdentity: string;
+  private readonly version: string;
+  private readonly reconnectDelayMs: number;
   private ready: boolean;
   private messageId: number;
-  private callQueue: PromiseQueue;
+  private readonly callQueue: PromiseQueue;
   private inflight: Inflight | undefined; // the call queue should guarantee only 1 inflight call at any point in time
   private inflightTimeoutMs: number = 10000; // time before we consider the inflight call lost
-  onConnected: null | (() => unknown);
+  private intentionalClose: boolean = false;
+  onConnected: null | (() => void);
+  onDisconnected: null | (() => void);
+  onConnectionFailed: null | (() => void);
+  onReconnecting: null | (() => void);
   private ws: WebSocket;
-  connect = () => {};
 
   onReceiveCall = (method: string, payload: unknown, messageId: string) => {};
   onReceiveCallResult = (messageId: string, payload: string) => {};
@@ -37,25 +41,29 @@ class Connection {
     errorDetails: string
   ) => {};
 
-  constructor(ocppBaseUrl: string, ocppIdentity: string, version: string) {
+  constructor(
+    ocppBaseUrl: string,
+    ocppIdentity: string,
+    version: string,
+    reconnectDelayMs: number = 3000
+  ) {
     this.ocppBaseUrl = ocppBaseUrl;
     this.ocppIdentity = ocppIdentity;
     this.version = version;
+    this.reconnectDelayMs = reconnectDelayMs;
     this.ready = false;
     this.messageId = 1;
     this.callQueue = new PromiseQueue();
     this.onConnected = null;
+    this.onDisconnected = null;
+    this.onConnectionFailed = null;
+    this.onReconnecting = null;
 
-    const url = this.ocppBaseUrl + '/' + this.ocppIdentity;
-    this.ws = new WebSocket(url, this.version);
-
-    this.ws.addEventListener('open', this.onOpen.bind(this));
-    this.ws.addEventListener('message', this.onMessage.bind(this));
-    this.ws.addEventListener('close', this.onClose.bind(this));
-    this.ws.addEventListener('error', this.onError.bind(this));
+    this.ws = this.openWebSocket();
   }
 
   disconnect() {
+    this.intentionalClose = true;
     this.ws.close();
   }
 
@@ -85,7 +93,22 @@ class Connection {
   }
 
   onClose() {
+    const wasConnected = this.ready;
+    this.ready = false;
+    if (wasConnected) {
+      // Connection was established, so this is a normal disconnect.
+      this.onDisconnected && this.onDisconnected();
+    } else {
+      // Connection was never established, so this is a failure to connect.
+      this.onConnectionFailed && this.onConnectionFailed();
+    }
     console.error(`WebSocket closed (no connection)`);
+    if (!this.intentionalClose) {
+      setTimeout(() => {
+        this.onReconnecting && this.onReconnecting();
+        this.ws = this.openWebSocket();
+      }, this.reconnectDelayMs);
+    }
   }
 
   onError(event: Event) {
@@ -131,6 +154,16 @@ class Connection {
       details,
     ];
     this.ws.send(JSON.stringify(formattedMessage));
+  }
+
+  private openWebSocket(): WebSocket {
+    const url = this.ocppBaseUrl + '/' + this.ocppIdentity;
+    const ws = new WebSocket(url, this.version);
+    ws.addEventListener('open', this.onOpen.bind(this));
+    ws.addEventListener('message', this.onMessage.bind(this));
+    ws.addEventListener('close', this.onClose.bind(this));
+    ws.addEventListener('error', this.onError.bind(this));
+    return ws;
   }
 
   private enqueueCall(call: Call) {
