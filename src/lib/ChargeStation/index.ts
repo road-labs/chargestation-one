@@ -45,6 +45,7 @@ export interface Settings {
   abbIdTagPrefix: string;
   energyActiveImportUnit: string;
   powerActiveImportUnit: string;
+  reconnectDelaySeconds: number;
 }
 
 interface CallLogItem {
@@ -72,7 +73,6 @@ export default class ChargeStation {
   private ocppVersion: OCPPVersion;
   private callLog: Map<CallLogItem>;
   private emitter: ChargeStationEventEmitter;
-  private numConnectionAttempts: number;
   private connection?: Connection;
   private onLog = ({}) => {};
   private onError = (error: Error) => {};
@@ -96,7 +96,6 @@ export default class ChargeStation {
     this.firmwareVersion = 'v1-000';
     this.ocppVersion = this.settings.ocppConfiguration as OCPPVersion;
     this.emitter = createEventEmitter(this, this.ocppVersion);
-    this.numConnectionAttempts = 0;
     this.currentStatus = {
       1: 'Available',
       2: 'Available',
@@ -130,15 +129,36 @@ export default class ChargeStation {
   }
 
   getConnection(ocppBaseUrl: string, ocppIdentity: string): Connection {
+    const reconnectDelayMs = this.settings.reconnectDelaySeconds * 1000;
     switch (this.ocppVersion) {
       case OCPPVersion.ocpp16:
-        return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp16);
+        return new Connection(
+          ocppBaseUrl,
+          ocppIdentity,
+          OCPPVersion.ocpp16,
+          reconnectDelayMs
+        );
       case OCPPVersion.ocpp201:
-        return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp201);
+        return new Connection(
+          ocppBaseUrl,
+          ocppIdentity,
+          OCPPVersion.ocpp201,
+          reconnectDelayMs
+        );
       case OCPPVersion.ocpp21:
-        return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp21);
+        return new Connection(
+          ocppBaseUrl,
+          ocppIdentity,
+          OCPPVersion.ocpp21,
+          reconnectDelayMs
+        );
       default:
-        return new Connection(ocppBaseUrl, ocppIdentity, OCPPVersion.ocpp16);
+        return new Connection(
+          ocppBaseUrl,
+          ocppIdentity,
+          OCPPVersion.ocpp16,
+          reconnectDelayMs
+        );
     }
   }
 
@@ -155,18 +175,19 @@ export default class ChargeStation {
       this.log('connected', '< Connected!');
       this.emitter.emitEvent(EventTypes.StationConnected);
     };
-    this.connection.onError = (error: Event) => {
-      if (!this.connected) {
-        return;
-      }
-
+    this.connection.onDisconnected = () => {
       this.connected = false;
-
-      // Not sure why this works but TS is complaining
+      this.log('message', '< Disconnected');
+    };
+    this.connection.onConnectionFailed = () => {
+      this.log('message', '< Connection failed');
+    };
+    this.connection.onReconnecting = () => {
+      this.log('message', `> Reconnecting to ${ocppBaseUrl}/${ocppIdentity}`);
+    };
+    this.connection.onError = (error: Event) => {
       // @ts-ignore
       this.log('error', error.message);
-      this.disconnect();
-      this.reconnect();
     };
     this.connection.onReceiveCall = (
       method: string,
@@ -218,8 +239,6 @@ export default class ChargeStation {
         responseReceivedAt: clock.now(),
       });
     };
-    this.connection.connect();
-    this.numConnectionAttempts++;
   }
 
   disconnect() {
@@ -234,22 +253,6 @@ export default class ChargeStation {
     setTimeout(() => {
       this.connect();
     }, 1000);
-  }
-
-  reconnect() {
-    if (this.numConnectionAttempts > 100) {
-      this.log('error', 'Too many connection attempts, giving up');
-      return;
-    }
-    const numSeconds = this.numConnectionAttempts < 5 ? 5 : 30;
-    this.log('message', `> Reconnecting in ${numSeconds} seconds`);
-    setTimeout(() => {
-      if (!this.connection) {
-        throw new Error('Connection is undefined');
-      }
-      this.connection.connect();
-      this.numConnectionAttempts++;
-    }, numSeconds * 1000);
   }
 
   async startSession(

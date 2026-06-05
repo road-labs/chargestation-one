@@ -27,6 +27,7 @@ export enum ChargeStationSetting {
   AbbIdTagPrefix = 'abbIdTagPrefix',
   EnergyActiveImportUnit = 'energyActiveImportUnit',
   PowerActiveImportUnit = 'powerActiveImportUnit',
+  ReconnectDelaySeconds = 'reconnectDelaySeconds',
 }
 
 enum SessionSetting {
@@ -303,6 +304,14 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
       'The prefix to be used for idTags sent relating to payment terminal transactions',
     defaultValue: '',
     predicate: isAbb,
+  },
+  {
+    key: ChargeStationSetting.ReconnectDelaySeconds,
+    name: 'Reconnect Delay',
+    description:
+      'Number of seconds to wait before attempting to reconnect after the WebSocket connection drops',
+    defaultValue: 3,
+    type: 'number',
   },
 ];
 
