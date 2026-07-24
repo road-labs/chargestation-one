@@ -5,7 +5,8 @@ import {
 import sendBootNotification from '../eventHandlers/ocpp-20/send-boot-notification';
 import sendHeartbeat from '../eventHandlers/ocpp-20/send-heartbeat';
 import sendHeartbeatDelayed from '../eventHandlers/ocpp-20/send-heartbeat-delayed';
-import sendStatusNotification from '../eventHandlers/ocpp-20/send-status-notification';
+import sendStatusNotification from 'lib/ChargeStation/eventHandlers/ocpp-20/send-status-notification';
+import sendStatusNotificationAvailable from '../eventHandlers/ocpp-20/send-status-notification-available';
 import handleBootNotificationCallResultReceived from '../eventHandlers/ocpp-20/handle-boot-notification-call-result-received';
 import handleHeartbeatCallResultReceived from '../eventHandlers/ocpp-20/handle-heartbeat-call-result-received';
 import handleGetBaseReportReceived from '../eventHandlers/ocpp-20/handle-get-base-report-received';
@@ -51,7 +52,7 @@ export default {
   [e.AuthorizationFailed]: [handleTokenRejection],
   [e.AuthorizationFailedDuringTransactionStart]: [handleTokenRejection],
   [e.AuthorizationFailedDuringTransactionStop]: [handleTokenRejection],
-  [e.SessionCancelled]: [sendStatusNotification],
+  [e.SessionCancelled]: [sendStatusNotificationAvailable],
   [e.AuthorizationAccepted]: [sendStartTransaction],
   [e201.TransactionEventCallResultReceived]: [
     handleTransactionEventCallResultReceived,

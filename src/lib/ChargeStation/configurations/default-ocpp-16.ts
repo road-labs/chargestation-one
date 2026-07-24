@@ -11,6 +11,7 @@ import sendStartTransaction from '../eventHandlers/ocpp-16/send-start-transactio
 import sendStatusNotificationPreparing from '../eventHandlers/ocpp-16/send-status-notification-preparing';
 import handleStartCharging from '../eventHandlers/ocpp-16/handle-start-charging';
 import handleTransactionStartedUI from '../eventHandlers/ocpp-16/handle-transaction-started-ui';
+import sendStatusNotification from 'lib/ChargeStation/eventHandlers/ocpp-16/send-status-notification';
 import sendStatusNotificationAvailable from '../eventHandlers/ocpp-16/send-status-notification-available';
 import sendStatusNotificationFinishing from '../eventHandlers/ocpp-16/send-status-notification-finishing';
 import handleTransactionStoppedUI from '../eventHandlers/ocpp-16/handle-transaction-stopped-ui';
@@ -43,10 +44,7 @@ export default {
   [e.BootNotificationCallResultReceived]: [
     handleBootNotificationCallResultReceived,
   ],
-  [e.BootNotificationAccepted]: [
-    sendStatusNotificationAvailable,
-    sendHeartbeat,
-  ],
+  [e.BootNotificationAccepted]: [sendStatusNotification, sendHeartbeat],
   [e.HeartbeatCallResultReceived]: [handleHeartbeatCallResultReceived],
   [e.HeartbeatAccepted]: [sendHeartbeatDelayed],
   [e.SessionStartInitiated]: [sendAuthorizeOrStartTransaction],

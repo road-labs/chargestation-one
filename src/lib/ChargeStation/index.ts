@@ -382,8 +382,10 @@ export default class ChargeStation {
       const message = callMessageBody as StatusNotificationRequest20 &
         StatusNotificationRequest16;
 
-      this.currentStatus[message.connectorId] =
-        message.status || message.connectorStatus;
+      if (message.connectorId > 0) {
+        this.currentStatus[message.connectorId] =
+          message.status || message.connectorStatus;
+      }
     }
 
     this.callLog[messageId] = {
