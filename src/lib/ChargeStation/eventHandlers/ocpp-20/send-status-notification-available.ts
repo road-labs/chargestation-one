@@ -3,18 +3,25 @@ import { sleep } from '../../../../utils/csv';
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 
 import clock from '../../clock';
-const sendStatusNotification: ChargeStationEventHandler = async ({
+const sendStatusNotificationAvailable: ChargeStationEventHandler = async ({
   chargepoint,
+  session,
 }) => {
   await sleep(1000);
 
+  if (session?.connectorId) {
+    chargepoint.writeCall('StatusNotification', {
+      timestamp: clock.now().toISOString(),
+      connectorStatus: 'Available',
+      evseId: 1,
+      connectorId: session.connectorId,
+    });
+    return;
+  }
+
   chargepoint.writeCall('StatusNotification', {
     timestamp: clock.now().toISOString(),
-    connectorStatus: Object.values(chargepoint.currentStatus).includes(
-      'Available'
-    )
-      ? 'Available'
-      : 'Occupied',
+    connectorStatus: 'Available',
     evseId: 0,
     connectorId: 0,
   });
@@ -23,7 +30,7 @@ const sendStatusNotification: ChargeStationEventHandler = async ({
 
   chargepoint.writeCall('StatusNotification', {
     timestamp: clock.now().toISOString(),
-    connectorStatus: chargepoint.currentStatus[1],
+    connectorStatus: 'Available',
     evseId: 1,
     connectorId: 1,
   });
@@ -32,10 +39,10 @@ const sendStatusNotification: ChargeStationEventHandler = async ({
 
   chargepoint.writeCall('StatusNotification', {
     timestamp: clock.now().toISOString(),
-    connectorStatus: chargepoint.currentStatus[2],
+    connectorStatus: 'Available',
     evseId: 1,
     connectorId: 2,
   });
 };
 
-export default sendStatusNotification;
+export default sendStatusNotificationAvailable;
