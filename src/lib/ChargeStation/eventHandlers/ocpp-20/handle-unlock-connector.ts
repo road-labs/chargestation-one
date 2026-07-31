@@ -5,21 +5,23 @@ import { UnlockConnectorRequest } from 'schemas/ocpp/2.0/UnlockConnectorRequest'
 const handleUnlockConnector: ChargeStationEventHandler<
   UnlockConnectorRequest
 > = async ({ chargepoint, callMessageBody, callMessageId }) => {
-  // connectorId 0 is not a valid connectorId
-  // Currently, the simulator doesn't have a concept of evse's yet, so we ignore the supplied evseId
-  if (!callMessageBody.connectorId) {
+  const { evseId, connectorId } = callMessageBody;
+  const connector = chargepoint.getConnectorByEvse(evseId, connectorId);
+
+  if (!connector) {
     const result: UnlockConnectorResponse = {
       status: 'UnknownConnector',
     };
     chargepoint.writeCallResult(callMessageId, result);
+    return;
   }
 
   const response: UnlockConnectorResponse = {
     status: 'UnlockFailed',
   };
 
-  if (chargepoint.hasRunningSession(callMessageBody.connectorId)) {
-    await chargepoint.stopSession(callMessageBody.connectorId);
+  if (chargepoint.hasRunningSession(connector.connectorNumber)) {
+    await chargepoint.stopSession(connector.connectorNumber);
     response.status = 'Unlocked';
   }
 

@@ -18,7 +18,7 @@ const handleStartTransactionCallResultReceived: ChargeStationEventHandler<
   }
 
   session.transactionId = callResultMessageBody.transactionId?.toString();
-  chargepoint.sessions[session.connectorId].isStartingSession = false;
+  chargepoint.sessions[session.connectorNumber].isStartingSession = false;
 
   emitter.emitEvent(EventTypes16.StartTransactionAccepted, { session });
 };

@@ -5,8 +5,8 @@ const sendChargingLimitReached: ChargeStationEventHandler = async ({
   chargepoint,
   session,
 }) => {
-  await chargepoint.writeCall<StatusNotificationRequest>('StatusNotification', {
-    connectorId: session.connectorId,
+  chargepoint.writeCall<StatusNotificationRequest>('StatusNotification', {
+    connectorId: session.connectorNumber,
     errorCode: 'NoError',
     status: 'SuspendedEV',
   });

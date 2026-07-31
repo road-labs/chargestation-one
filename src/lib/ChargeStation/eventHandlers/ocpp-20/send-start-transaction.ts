@@ -10,11 +10,10 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
   chargepoint,
   session,
 }) => {
-  chargepoint.sessions[session.connectorId].isStartingSession = true;
+  chargepoint.sessions[session.connectorNumber].isStartingSession = true;
   await sleep(1000);
 
-  const evseId = 1;
-  const connectorId = session.connectorId;
+  const { evseId, connectorId } = session.connector;
 
   chargepoint.writeCall('StatusNotification', {
     timestamp: clock.now().toISOString(),

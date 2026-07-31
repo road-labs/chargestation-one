@@ -2,14 +2,14 @@ export default async function sendStatusNotificationPreparing({
   chargepoint,
   session,
 }) {
-  if (chargepoint.currentStatus[session.connectorId] === 'Preparing') {
+  if (session.connectorStatus === 'Preparing') {
     return;
   }
 
   await chargepoint.writeCall(
     'StatusNotification',
     {
-      connectorId: session.connectorId,
+      connectorId: session.connectorNumber,
       errorCode: 'NoError',
       status: 'Preparing',
     },

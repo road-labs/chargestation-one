@@ -6,12 +6,12 @@ const sendStartTransaction: ChargeStationEventHandler = async ({
   chargepoint,
   session,
 }) => {
-  chargepoint.sessions[session.connectorId].isStartingSession = true;
+  chargepoint.sessions[session.connectorNumber].isStartingSession = true;
   await sleep(1000);
   chargepoint.writeCall<StartTransactionRequest>(
     'StartTransaction',
     {
-      connectorId: session.connectorId,
+      connectorId: session.connectorNumber,
       idTag: session.options.uid,
       meterStart: Math.round(session.kwhElapsed * 1000),
       timestamp: session.now().toISOString(),

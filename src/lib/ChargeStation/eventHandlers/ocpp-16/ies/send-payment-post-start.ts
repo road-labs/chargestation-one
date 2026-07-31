@@ -17,7 +17,7 @@ const sendPaymentPostStart: ChargeStationEventHandler = async (params) => {
     case 1:
       data = {
         Bill: 3000,
-        ConnectorId: session.connectorId,
+        ConnectorId: session.connectorNumber,
         PaymentType: 'Prepayment',
         OcppTransactionId: Number(session.transactionId),
         PosTransactionId: `POS${session.transactionId}`,
@@ -31,7 +31,7 @@ const sendPaymentPostStart: ChargeStationEventHandler = async (params) => {
       break;
     case 2:
       data = {
-        ConnectorId: session.connectorId,
+        ConnectorId: session.connectorNumber,
         PaymentType: 'Preauthorization',
         OcppTransactionId: Number(session.transactionId),
         PosTransactionId: `POS${session.transactionId}`,

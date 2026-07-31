@@ -3,7 +3,7 @@ import React from 'react';
 import { round } from 'utils/formatting';
 
 export function SessionStatistic({
-  connectorId,
+  connectorNumber,
   kwhCharged,
   durationSeconds,
   stateOfCharge,
@@ -12,7 +12,7 @@ export function SessionStatistic({
   return (
     <Card className="session-statistic">
       <Card.Content>
-        <CardHeader>Connector {connectorId}</CardHeader>
+        <CardHeader>Connector {connectorNumber}</CardHeader>
         <Divider />
         <table>
           <tbody>

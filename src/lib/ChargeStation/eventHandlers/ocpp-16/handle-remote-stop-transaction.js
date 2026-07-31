@@ -5,25 +5,23 @@ export default async function handleRemoteStopTransaction({
 }) {
   const { transactionId } = callMessageBody;
 
-  let connectorId;
-  let response;
+  const connectorNumber = chargepoint.connectors
+    .map((c) => c.connectorNumber)
+    .find(
+      (n) =>
+        chargepoint.sessions[n] &&
+        chargepoint.sessions[n].transactionId?.toString() ===
+          transactionId?.toString()
+    );
 
-  ['1', '2'].forEach((cId) => {
-    if (
-      chargepoint.sessions[cId] &&
-      chargepoint.sessions[cId].transactionId?.toString() ===
-        transactionId?.toString()
-    ) {
-      connectorId = cId.toString();
-    }
-  });
-  if (!connectorId || !chargepoint.hasRunningSession(Number(connectorId))) {
+  let response;
+  if (!connectorNumber || !chargepoint.hasRunningSession(connectorNumber)) {
     response = {
       status: 'Rejected',
     };
   } else {
     setTimeout(() => {
-      chargepoint.stopSession(Number(connectorId));
+      chargepoint.stopSession(connectorNumber);
     }, 100);
     response = {
       status: 'Accepted',

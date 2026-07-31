@@ -24,7 +24,7 @@ const sendMeterValues: ChargeStationEventHandler = async ({
   );
 
   chargepoint.writeCall<MeterValuesRequest>('MeterValues', {
-    connectorId: session.connectorId,
+    connectorId: session.connectorNumber,
     transactionId: Number(session.transactionId),
     meterValue: [
       {

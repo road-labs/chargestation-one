@@ -18,14 +18,14 @@ export const sendMeterConfiguration: ChargeStationEventHandler = async (
 
   await sleep(2000);
 
-  for (const connectorId of [1, 2]) {
+  for (const connector of chargepoint.connectors) {
     chargepoint.writeCall('DataTransfer', {
       vendorId: 'generalConfiguration',
       messageId: 'setMeterConfiguration',
       data: JSON.stringify({
         meters: [
           {
-            connectorId,
+            connectorId: connector.connectorNumber,
             meterSerial: '1234567',
             type: 'SIGNATURE',
             publicKey,
