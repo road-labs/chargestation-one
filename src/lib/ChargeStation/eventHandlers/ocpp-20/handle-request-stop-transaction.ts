@@ -9,19 +9,21 @@ const handleRequestStopTransaction: ChargeStationEventHandler<
 
   let response: RequestStopTransactionResponse;
 
-  const connectorId = ['1', '2'].find(
-    (cId) =>
-      chargepoint.sessions[cId] &&
-      chargepoint.sessions[cId].transactionId?.toString() ===
-        transactionId?.toString()
-  );
-  if (!connectorId || !chargepoint.hasRunningSession(Number(connectorId))) {
+  const connectorNumber = chargepoint.connectors
+    .map((c) => c.connectorNumber)
+    .find(
+      (n) =>
+        chargepoint.sessions[n] &&
+        chargepoint.sessions[n].transactionId?.toString() ===
+          transactionId?.toString()
+    );
+  if (!connectorNumber || !chargepoint.hasRunningSession(connectorNumber)) {
     response = {
       status: 'Rejected',
     };
   } else {
     setTimeout(() => {
-      chargepoint.stopSession(Number(connectorId));
+      chargepoint.stopSession(connectorNumber);
     }, 100);
     response = {
       status: 'Accepted',

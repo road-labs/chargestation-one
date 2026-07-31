@@ -2,10 +2,11 @@ import React from 'react';
 import { Modal, Button, Form, Divider } from 'semantic';
 import modal from 'helpers/modal';
 
-function selectDefaultConnector(availableConnectors) {
-  return ['1', '2'].filter((connectorId) => {
-    return !availableConnectors.includes(Number(connectorId));
-  });
+function selectDefaultConnector(connectors, availableConnectors) {
+  const occupied = connectors.find(
+    (c) => !availableConnectors.includes(c.connectorNumber.toString())
+  );
+  return (occupied ?? connectors[0]).connectorNumber.toString();
 }
 
 // Valid status transitions referenced from Page 41 https://www.oasis-open.org/committees/download.php/58944/ocpp-1.6.pdf
@@ -119,9 +120,14 @@ newStatusOption(
 @modal
 export default class StatusNotificationModal extends React.Component {
   state = {
-    status: this.props.currentStatus || {},
+    status: Object.fromEntries(
+      this.props.connectors.map((c) => [c.connectorNumber, c.status])
+    ),
     session: this.props.session,
-    connectorId: selectDefaultConnector(this.props.availableConnectors)[0],
+    connectorNumber: selectDefaultConnector(
+      this.props.connectors,
+      this.props.availableConnectors
+    ),
   };
 
   componentDidUpdate(prevProps) {
@@ -130,33 +136,40 @@ export default class StatusNotificationModal extends React.Component {
       this.props.availableConnectors.length
     ) {
       this.setState({
-        connectorId: selectDefaultConnector(this.props.availableConnectors)[0],
+        connectorNumber: selectDefaultConnector(
+          this.props.connectors,
+          this.props.availableConnectors
+        ),
       });
     }
   }
 
   onSubmit = () => {
     this.props.onSave({
-      connectorId: this.state.connectorId,
-      status: this.state.status[this.state.connectorId],
+      connectorNumber: this.state.connectorNumber,
+      status: this.state.status[this.state.connectorNumber],
     });
     this.props.close();
   };
 
   render() {
-    const { connectorId, status } = this.state;
-    const { availableConnectors } = this.props;
+    const { connectorNumber, status } = this.state;
+    const { availableConnectors, connectors } = this.props;
 
-    const connectorOptions = ['1', '2'].map((key) => {
+    const connectorOptions = connectors.map((c) => {
+      const key = c.connectorNumber.toString();
       return {
         key,
         text: `Connector ${key}`,
         value: key,
-        disabled: availableConnectors.includes(Number(key)),
+        disabled: availableConnectors.includes(key),
       };
     });
-    const connectorStatus = this.props.currentStatus[Number(connectorId)];
-    const statusOptions = filteredStatusOptions(connectorStatus);
+    const connector = connectors.find(
+      (c) => c.connectorNumber === Number(connectorNumber)
+    );
+    const currentStatus = connector?.status;
+    const statusOptions = filteredStatusOptions(currentStatus);
 
     return (
       <>
@@ -167,22 +180,22 @@ export default class StatusNotificationModal extends React.Component {
               label="Connector"
               options={connectorOptions}
               selection
-              value={connectorId}
+              value={connectorNumber}
               onChange={(e, { value }) => {
-                this.setState({ connectorId: value });
+                this.setState({ connectorNumber: value });
               }}
             />
             <Divider hidden />
             <Form.Dropdown
-              label={`Status (currently ${connectorStatus})`}
+              label={`Status (currently ${currentStatus})`}
               options={statusOptions}
               selection
-              value={status[connectorId]}
+              value={status[connectorNumber]}
               onChange={(e, { value }) => {
                 this.setState({
                   status: {
                     ...status,
-                    [connectorId]: value,
+                    [connectorNumber]: value,
                   },
                 });
               }}

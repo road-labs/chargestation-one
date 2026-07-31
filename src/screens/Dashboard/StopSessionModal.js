@@ -1,19 +1,22 @@
 import React from 'react';
-import { Modal, Button, Form, Header, Divider } from 'semantic';
+import { Modal, Button, Form, Divider } from 'semantic';
 import modal from 'helpers/modal';
-import { sessionSettingsList } from 'lib/settings';
-import { HelpTip } from 'components';
 
-function selectDefaultConnector(availableConnectors) {
-  return ['1', '2'].filter((connectorId) => {
-    return !availableConnectors.includes(connectorId);
-  });
+function selectDefaultConnector(connectors, availableConnectors) {
+  const occupied = connectors.find(
+    (c) => !availableConnectors.includes(c.connectorNumber.toString())
+  );
+  return occupied?.connectorNumber.toString();
 }
+
 @modal
 export default class StopSessionModal extends React.Component {
   state = {
     session: this.props.session,
-    connectorId: selectDefaultConnector(this.props.availableConnectors)[0],
+    connectorNumber: selectDefaultConnector(
+      this.props.connectors,
+      this.props.availableConnectors
+    ),
   };
   componentDidUpdate(prevProps) {
     if (
@@ -21,7 +24,10 @@ export default class StopSessionModal extends React.Component {
       this.props.availableConnectors.length
     ) {
       this.setState({
-        connectorId: selectDefaultConnector(this.props.availableConnectors)[0],
+        connectorNumber: selectDefaultConnector(
+          this.props.connectors,
+          this.props.availableConnectors
+        ),
       });
     }
   }
@@ -30,10 +36,11 @@ export default class StopSessionModal extends React.Component {
     this.props.close();
   };
   render() {
-    const { connectorId } = this.state;
-    const { availableConnectors } = this.props;
+    const { connectorNumber } = this.state;
+    const { availableConnectors, connectors } = this.props;
 
-    const connectorOptions = ['1', '2'].map((key) => {
+    const connectorOptions = connectors.map((c) => {
+      const key = c.connectorNumber.toString();
       return {
         key,
         text: `Connector ${key}`,
@@ -50,9 +57,9 @@ export default class StopSessionModal extends React.Component {
               label="Connector"
               options={connectorOptions}
               selection
-              value={connectorId}
+              value={connectorNumber}
               onChange={(e, { value }) => {
-                this.setState({ connectorId: value });
+                this.setState({ connectorNumber: value });
               }}
             />
             <Divider hidden />

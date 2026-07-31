@@ -13,8 +13,8 @@ const sendStopTransactionWithCost: ChargeStationEventHandler = async (
     return sendStopTransaction(params);
   }
 
-  chargepoint.sessions[session.connectorId].isStoppingSession = true;
-  chargepoint.sessions[session.connectorId].tickInterval?.stop();
+  chargepoint.sessions[session.connectorNumber].isStoppingSession = true;
+  chargepoint.sessions[session.connectorNumber].tickInterval?.stop();
 
   await sleep(1000);
 

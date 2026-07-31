@@ -5,7 +5,7 @@ export default async function sendStatusNotificationCharging({
   await chargepoint.writeCall(
     'StatusNotification',
     {
-      connectorId: session.connectorId,
+      connectorId: session.connectorNumber,
       errorCode: 'NoError',
       status: 'Charging',
       info: 'Charging',

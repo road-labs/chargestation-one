@@ -8,7 +8,7 @@ import SettingsInput from 'screens/Dashboard/SettingsInput';
 export default class StartSessionModal extends React.Component {
   state = {
     session: this.props.session,
-    connectorId: this.props.availableConnectors[0],
+    connectorNumber: this.props.availableConnectors[0],
     authorizationType: AuthorizationType.RFID,
   };
   setField = (e, { name, value }) => {
@@ -25,9 +25,10 @@ export default class StartSessionModal extends React.Component {
   };
 
   render() {
-    const { session, connectorId, authorizationType } = this.state;
-    const { availableConnectors } = this.props;
-    const connectorOptions = ['1', '2'].map((key) => {
+    const { session, connectorNumber, authorizationType } = this.state;
+    const { availableConnectors, connectors } = this.props;
+    const connectorOptions = connectors.map((c) => {
+      const key = c.connectorNumber.toString();
       return {
         key,
         text: `Connector ${key}`,
@@ -58,9 +59,9 @@ export default class StartSessionModal extends React.Component {
               label="Connector"
               options={connectorOptions}
               selection
-              value={connectorId}
+              value={connectorNumber}
               onChange={(e, { value }) => {
-                this.setState({ connectorId: value });
+                this.setState({ connectorNumber: value });
               }}
             />
             <Form.Dropdown
@@ -72,7 +73,7 @@ export default class StartSessionModal extends React.Component {
                 this.setState({ authorizationType: value });
               }}
             />
-            {connectorId && (
+            {connectorNumber && (
               <React.Fragment>
                 {sessionSettingsList.map((item) => {
                   return (

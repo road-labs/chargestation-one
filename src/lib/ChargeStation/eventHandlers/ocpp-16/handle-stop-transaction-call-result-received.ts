@@ -17,7 +17,7 @@ const handleStopTransactionCallResultReceived: ChargeStationEventHandler<
     return;
   }
 
-  delete chargepoint.sessions[session.connectorId];
+  delete chargepoint.sessions[session.connectorNumber];
 
   emitter.emitEvent(EventTypes16.StopTransactionAccepted, { session });
 };

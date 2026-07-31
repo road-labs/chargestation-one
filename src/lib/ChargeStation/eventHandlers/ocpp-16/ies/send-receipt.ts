@@ -19,7 +19,7 @@ const sendReceipt: ChargeStationEventHandler = async (params) => {
     vendorId: 'IES',
     messageId: 'PaymentReceipt',
     data: JSON.stringify({
-      ConnectorId: session.connectorId,
+      ConnectorId: session.connectorNumber,
       PosTransactionId: `POS${session.transactionId}`,
       TimeStamp: new Date().toISOString(),
       ...((sendReceipts === 'Customer' || sendReceipts === 'Both') && {

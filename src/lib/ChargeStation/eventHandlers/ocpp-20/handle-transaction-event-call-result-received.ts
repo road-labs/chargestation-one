@@ -36,7 +36,7 @@ const handleTransactionEventCallResultReceived: ChargeStationEventHandler<
         );
         return;
       }
-      chargepoint.sessions[session.connectorId].isStartingSession = false;
+      chargepoint.sessions[session.connectorNumber].isStartingSession = false;
       await sleep(1000);
       let timeSince = clock.now();
       session.tickInterval = clock.setInterval(() => {
@@ -60,7 +60,7 @@ const handleTransactionEventCallResultReceived: ChargeStationEventHandler<
         return;
       }
       emitter.emitEvent(EventTypes.Stopped, { session });
-      delete chargepoint.sessions[session.connectorId];
+      delete chargepoint.sessions[session.connectorNumber];
       break;
   }
 };

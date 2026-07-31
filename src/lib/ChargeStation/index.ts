@@ -48,6 +48,13 @@ export interface Settings {
   reconnectDelaySeconds: number;
 }
 
+export interface Connector {
+  connectorNumber: number;
+  evseId: number;
+  connectorId: number;
+  status: string;
+}
+
 interface CallLogItem {
   destination: 'charge-point' | 'central-server';
   requestReceivedAt?: Date;
@@ -77,7 +84,7 @@ export default class ChargeStation {
   private onLog = ({}) => {};
   private onError = (error: Error) => {};
 
-  public currentStatus: Map<string>;
+  public connectors: Connector[];
   public sessions: Map<Session>;
   public connected = false;
   public firmwareVersion: string;
@@ -96,10 +103,37 @@ export default class ChargeStation {
     this.firmwareVersion = 'v1-000';
     this.ocppVersion = this.settings.ocppConfiguration as OCPPVersion;
     this.emitter = createEventEmitter(this, this.ocppVersion);
-    this.currentStatus = {
-      1: 'Available',
-      2: 'Available',
-    };
+    this.connectors = [
+      {
+        connectorNumber: 1,
+        evseId: 1,
+        connectorId: 1,
+        status: 'Available',
+      },
+      {
+        connectorNumber: 2,
+        evseId: 2,
+        connectorId: 1,
+        status: 'Available',
+      },
+    ];
+  }
+
+  getConnector(connectorNumber: number): Connector | undefined {
+    return this.connectors.find((c) => c.connectorNumber === connectorNumber);
+  }
+
+  getConnectorByEvse(
+    evseId: number,
+    connectorId: number
+  ): Connector | undefined {
+    return this.connectors.find(
+      (c) => c.evseId === evseId && c.connectorId === connectorId
+    );
+  }
+
+  connectorsForEvse(evseId: number): Connector[] {
+    return this.connectors.filter((c) => c.evseId === evseId);
   }
 
   getSetting(value: ChargeStationSetting) {
@@ -111,7 +145,9 @@ export default class ChargeStation {
   }
 
   availableConnectors() {
-    return ['1', '2'].filter((id) => !this.sessions[id]);
+    return this.connectors
+      .filter((c) => !this.sessions[c.connectorNumber])
+      .map((c) => c.connectorNumber.toString());
   }
 
   getMeterValueSampleInterval() {
@@ -256,7 +292,7 @@ export default class ChargeStation {
   }
 
   async startSession(
-    connectorId: number,
+    connectorNumber: number,
     session: SessionOptions,
     authorizationType: AuthorizationType
   ) {
@@ -264,8 +300,8 @@ export default class ChargeStation {
       throw new Error('Not connected to OCPP server, cannot start session');
     }
 
-    this.sessions[connectorId] = new Session(
-      connectorId,
+    this.sessions[connectorNumber] = new Session(
+      connectorNumber,
       {
         ...session,
         authorizationType,
@@ -273,33 +309,35 @@ export default class ChargeStation {
       this.emitter,
       this
     );
-    await this.sessions[connectorId].start();
+    await this.sessions[connectorNumber].start();
   }
 
-  async stopSession(connectorId: number) {
-    if (!this.sessions[connectorId]) {
+  async stopSession(connectorNumber: number) {
+    if (!this.sessions[connectorNumber]) {
       return;
     }
-    await this.sessions[connectorId].stop();
+    await this.sessions[connectorNumber].stop();
   }
 
-  hasRunningSession(connectorId: number) {
-    return !!this.sessions[connectorId];
+  hasRunningSession(connectorNumber: number) {
+    return !!this.sessions[connectorNumber];
   }
 
   getSessions() {
     return Object.values(this.sessions);
   }
 
-  isStartingSession(connectorId: number) {
+  isStartingSession(connectorNumber: number) {
     return (
-      this.sessions[connectorId] && this.sessions[connectorId].isStartingSession
+      this.sessions[connectorNumber] &&
+      this.sessions[connectorNumber].isStartingSession
     );
   }
 
-  isStoppingSession(connectorId: number) {
+  isStoppingSession(connectorNumber: number) {
     return (
-      this.sessions[connectorId] && this.sessions[connectorId].isStoppingSession
+      this.sessions[connectorNumber] &&
+      this.sessions[connectorNumber].isStoppingSession
     );
   }
 
@@ -382,9 +420,13 @@ export default class ChargeStation {
       const message = callMessageBody as StatusNotificationRequest20 &
         StatusNotificationRequest16;
 
-      if (message.connectorId > 0) {
-        this.currentStatus[message.connectorId] =
-          message.status || message.connectorStatus;
+      const connector =
+        this.ocppVersion === OCPPVersion.ocpp16
+          ? this.getConnector(message.connectorId)
+          : this.getConnectorByEvse(message.evseId, message.connectorId);
+
+      if (connector) {
+        connector.status = message.status || message.connectorStatus;
       }
     }
 
@@ -400,9 +442,11 @@ export default class ChargeStation {
     return messageId;
   }
 
-  sendStatusNotification(connectorId: number, status: string) {
+  sendStatusNotification(connectorNumber: number, status: string) {
+    // Only used from the OCPP 1.6 UI; in 1.6 the internal "position" maps
+    // directly to the wire `connectorId`.
     this.writeCall('StatusNotification', {
-      connectorId,
+      connectorId: connectorNumber,
       status,
       errorCode: 'NoError',
     });
@@ -498,7 +542,7 @@ export class Session {
   stopTime: Date | undefined;
 
   constructor(
-    public connectorId: number,
+    public connectorNumber: number,
     public options: SessionOptions,
     private emitter: ChargeStationEventEmitter,
     private chargeStation: ChargeStation
@@ -521,8 +565,18 @@ export class Session {
     this.transactionId = Math.floor(Math.random() * 100_000).toString();
   }
 
+  get connector(): Connector {
+    const connector = this.chargeStation.getConnector(this.connectorNumber);
+    if (!connector) {
+      throw new Error(
+        `No connector found for connectorNumber ${this.connectorNumber}`
+      );
+    }
+    return connector;
+  }
+
   get connectorStatus(): string {
-    return this.chargeStation.currentStatus[this.connectorId];
+    return this.connector.status;
   }
 
   get stateOfCharge(): number {
@@ -573,7 +627,7 @@ export class Session {
       console.info('Charging', {
         clock: this.now().toISOString(),
         speed: clock.getSpeed(),
-        connectorId: this.connectorId,
+        connectorNumber: this.connectorNumber,
         stateOfCharge: this.carBatteryStateOfCharge,
         chargeAddedKwh: amountKwhToCharge,
         carNeededKwh,

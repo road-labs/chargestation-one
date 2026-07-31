@@ -7,19 +7,13 @@ const sendStatusNotification: ChargeStationEventHandler = async ({
 }) => {
   await sleep(1000);
 
-  const numConnectors = Number(
-    chargepoint.configuration.getVariableValue('NumberOfConnectors')
-  );
-
-  for (let i = 0; i < numConnectors; i++) {
-    const connectorId = i + 1;
-
+  for (const connector of chargepoint.connectors) {
     chargepoint.writeCall(
       'StatusNotification',
       {
-        connectorId,
+        connectorId: connector.connectorNumber,
         errorCode: 'NoError',
-        status: chargepoint.currentStatus[connectorId],
+        status: connector.status,
       },
       session
     );

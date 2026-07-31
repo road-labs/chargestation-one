@@ -7,9 +7,9 @@ const sendChargingLimitReached: ChargeStationEventHandler = async ({
   chargepoint,
   session,
 }) => {
-  await chargepoint.writeCall<StatusNotificationRequest>('StatusNotification', {
-    connectorId: session.connectorId,
-    evseId: 1,
+  chargepoint.writeCall<StatusNotificationRequest>('StatusNotification', {
+    connectorId: session.connector.connectorId,
+    evseId: session.connector.evseId,
     connectorStatus: 'Occupied',
     timestamp: clock.now().toISOString(),
   });

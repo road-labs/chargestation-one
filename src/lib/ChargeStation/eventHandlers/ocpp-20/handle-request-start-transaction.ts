@@ -7,16 +7,27 @@ const handleRequestStartTransaction: ChargeStationEventHandler<
 > = ({ chargepoint, callMessageId, callMessageBody }) => {
   const { remoteStartId, evseId, idToken } = callMessageBody;
 
+  // RequestStartTransaction addresses an EVSE (not a specific connector); if
+  // the EVSE has multiple connectors, the station picks a free one. When
+  // evseId is omitted we consider every connector on the station.
+  const candidates =
+    evseId !== undefined
+      ? chargepoint.connectorsForEvse(Number(evseId))
+      : chargepoint.connectors;
+  const target = candidates.find(
+    (c) => !chargepoint.hasRunningSession(c.connectorNumber)
+  );
+
   let response: RequestStartTransactionResponse;
 
-  if (chargepoint.hasRunningSession(Number(evseId))) {
+  if (!target) {
     response = {
       status: 'Rejected',
     };
   } else {
     setTimeout(() => {
       chargepoint.startSession(
-        Number(evseId),
+        target.connectorNumber,
         {
           authorizationType: 'rfid',
           carBatteryKwh: 0,

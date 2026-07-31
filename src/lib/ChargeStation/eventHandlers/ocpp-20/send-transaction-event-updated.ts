@@ -70,7 +70,10 @@ const sendTransationEventUpdated: ChargeStationEventHandler = ({
         ],
       },
     ],
-    evse: { id: 1, connectorId: session.connectorId },
+    evse: {
+      id: session.connector.evseId,
+      connectorId: session.connector.connectorId,
+    },
   });
 };
 

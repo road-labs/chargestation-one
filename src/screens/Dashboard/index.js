@@ -82,8 +82,8 @@ export default class Home extends React.Component {
 
     chargeStation.onLog = this.onLog;
     chargeStation.onError = this.onError;
-    chargeStation.onSessionStart = (connectorId) => {
-      if (connectorId == '1') {
+    chargeStation.onSessionStart = (connectorNumber) => {
+      if (connectorNumber == '1') {
         this.setState({
           session1OnceStarted: true,
           session1Ongoing: true,
@@ -97,8 +97,8 @@ export default class Home extends React.Component {
         });
       }
     };
-    chargeStation.onSessionStop = (connectorId) => {
-      if (connectorId == '1') {
+    chargeStation.onSessionStop = (connectorNumber) => {
+      if (connectorNumber == '1') {
         this.setState({
           session1OnceStarted: true,
           session1Ongoing: false,
@@ -201,8 +201,11 @@ export default class Home extends React.Component {
     if (!chargeStation) {
       return <Loader />;
     }
-    const chargeStationIsCharging =
-      chargeStation.hasRunningSession(1) || chargeStation.hasRunningSession(2);
+    const anyConnector = (predicate) =>
+      chargeStation.connectors.some((c) => predicate(c.connectorNumber));
+    const chargeStationIsCharging = anyConnector((n) =>
+      chargeStation.hasRunningSession(n)
+    );
     return (
       <div className="dashboard">
         <CommandDetailsModal
@@ -244,8 +247,8 @@ export default class Home extends React.Component {
           <div className="realtime-statistics">
             {chargeStation?.getSessions()?.map((session) => (
               <SessionStatistic
-                key={session.connectorId}
-                connectorId={session.connectorId}
+                key={session.connectorNumber}
+                connectorNumber={session.connectorNumber}
                 kwhCharged={session.kwhElapsed}
                 durationSeconds={session.secondsElapsed}
                 stateOfCharge={session.stateOfCharge}
@@ -282,11 +285,12 @@ export default class Home extends React.Component {
           <div className="actions">
             <StartSessionModal
               availableConnectors={chargeStation.availableConnectors()}
+              connectors={chargeStation.connectors}
               session={session}
-              onSave={({ connectorId, session, authorizationType }) => {
+              onSave={({ connectorNumber, session, authorizationType }) => {
                 this.setState({ session });
                 chargeStation.startSession(
-                  Number(connectorId),
+                  Number(connectorNumber),
                   session,
                   authorizationType
                 );
@@ -296,10 +300,9 @@ export default class Home extends React.Component {
                 <Button
                   inverted
                   primary={chargeStationIsCharging ? false : true}
-                  loading={
-                    chargeStation.isStartingSession(1) ||
-                    chargeStation.isStartingSession(2)
-                  }
+                  loading={anyConnector((n) =>
+                    chargeStation.isStartingSession(n)
+                  )}
                   icon="play"
                   content="Start Charging"
                 />
@@ -308,11 +311,11 @@ export default class Home extends React.Component {
 
             <StatusNotificationModal
               availableConnectors={chargeStation.availableConnectors()}
-              currentStatus={chargeStation.currentStatus}
+              connectors={chargeStation.connectors}
               session={session}
-              onSave={async ({ connectorId, status }) => {
+              onSave={async ({ connectorNumber, status }) => {
                 await chargeStation.sendStatusNotification(
-                  parseInt(connectorId),
+                  parseInt(connectorNumber),
                   status
                 );
                 this.nextTick();
@@ -329,9 +332,10 @@ export default class Home extends React.Component {
 
             <StopSessionModal
               availableConnectors={chargeStation.availableConnectors()}
+              connectors={chargeStation.connectors}
               session={session}
-              onSave={async ({ connectorId }) => {
-                await chargeStation.stopSession(Number(connectorId));
+              onSave={async ({ connectorNumber }) => {
+                await chargeStation.stopSession(Number(connectorNumber));
                 this.nextTick();
               }}
               trigger={
@@ -339,10 +343,9 @@ export default class Home extends React.Component {
                   inverted
                   primary={chargeStationIsCharging ? true : false}
                   disabled={!chargeStationIsCharging}
-                  loading={
-                    chargeStation.isStoppingSession(1) ||
-                    chargeStation.isStoppingSession(2)
-                  }
+                  loading={anyConnector((n) =>
+                    chargeStation.isStoppingSession(n)
+                  )}
                   icon="stop"
                   content="End Charging"
                 />

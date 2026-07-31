@@ -7,7 +7,7 @@ const handleTokenRejection: ChargeStationEventHandler = async ({
   emitter,
   session,
 }) => {
-  const chargeSession = chargepoint.sessions[session.connectorId];
+  const chargeSession = chargepoint.sessions[session.connectorNumber];
   if (!session) {
     return;
   }
@@ -17,7 +17,7 @@ const handleTokenRejection: ChargeStationEventHandler = async ({
   chargeSession.tickInterval?.stop();
   await sleep(1000);
 
-  delete chargepoint.sessions[chargeSession.connectorId];
+  delete chargepoint.sessions[chargeSession.connectorNumber];
   emitter.emitEvent(EventTypes.SessionCancelled, { session: chargeSession });
 };
 

@@ -9,8 +9,10 @@ const overrideSessionUid: ChargeStationEventHandler = async (params) => {
 
   const paddedSerialNumber =
     chargepoint.settings.chargePointSerialNumber.padStart(14, '0');
-  const paddedConnectorId = session.connectorId.toString().padStart(2, '0');
-  session.options.uid = `FF${paddedSerialNumber}${paddedConnectorId}`;
+  const paddedConnectorNumber = session.connectorNumber
+    .toString()
+    .padStart(2, '0');
+  session.options.uid = `FF${paddedSerialNumber}${paddedConnectorNumber}`;
 };
 
 export default overrideSessionUid;
