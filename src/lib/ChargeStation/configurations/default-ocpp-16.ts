@@ -28,6 +28,7 @@ import sendChargingLimitReached from '../eventHandlers/ocpp-16/send-charging-lim
 import sendMeterValues from '../eventHandlers/ocpp-16/send-meter-values';
 import handleReset from '../eventHandlers/ocpp-16/handle-reset';
 import handleSetChargingProfile from '../eventHandlers/ocpp-16/handle-set-charging-profile';
+import handleClearChargingProfile from '../eventHandlers/ocpp-16/handle-clear-charging-profile';
 import handleAuthorizeCallResultReceived from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-authorize-call-result-received';
 import handleDataTransfer from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-data-transfer';
 import handleUnlockConnector from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-unlock-connector';
@@ -83,6 +84,7 @@ export default {
   [e.ChargingLimitReached]: [sendChargingLimitReached],
   [e.ResetReceived]: [handleReset],
   [e.SetChargingProfileReceived]: [handleSetChargingProfile],
+  [e.ClearChargingProfileReceived]: [handleClearChargingProfile],
   [e.DataTransferReceived]: [handleDataTransfer],
   [e.UnlockConnectorReceived]: [handleUnlockConnector],
   [e.GetInstalledCertificatedIdsReceived]: [handleGetInstalledCertificateIds],

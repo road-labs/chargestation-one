@@ -21,6 +21,7 @@ export const EventTypes = {
   ChargingTick: 'chargingTick',
   ResetReceived: 'resetReceived',
   SetChargingProfileReceived: 'setChargingProfileReceived',
+  ClearChargingProfileReceived: 'clearChargingProfileReceived',
   DataTransferReceived: 'dataTransferReceived',
   DataTransferCallResultReceived: 'dataTransferCallResultReceived',
   UnlockConnectorReceived: 'unlockConnectorReceived',
