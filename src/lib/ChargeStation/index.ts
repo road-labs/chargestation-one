@@ -81,6 +81,8 @@ export default class ChargeStation {
   public sessions: Map<Session>;
   public connected = false;
   public firmwareVersion: string;
+  public onSessionStart?: (connectorId: number) => void;
+  public onSessionStop?: (connectorId: number) => void;
   public callToReplyManually: {
     messageId: string;
     action: string;

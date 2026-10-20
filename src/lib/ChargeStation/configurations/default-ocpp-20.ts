@@ -23,6 +23,7 @@ import handleTransactionStartedUI from 'lib/ChargeStation/eventHandlers/ocpp-16/
 import handleTransactionStoppedUI from 'lib/ChargeStation/eventHandlers/ocpp-16/handle-transaction-stopped-ui';
 import handleReset from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-reset';
 import handleSetChargingProfile from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-set-charging-profile';
+import handleClearChargingProfile from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-clear-charging-profile';
 import handleGetVariables from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-get-variables';
 import handleDataTransfer from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-data-transfer';
 import handleRequestStartTransaction from 'lib/ChargeStation/eventHandlers/ocpp-20/handle-request-start-transaction';
@@ -68,6 +69,7 @@ export default {
   ],
   [e.ResetReceived]: [handleReset],
   [e.SetChargingProfileReceived]: [handleSetChargingProfile],
+  [e.ClearChargingProfileReceived]: [handleClearChargingProfile],
   [e.DataTransferReceived]: [handleDataTransfer],
   [e.UnlockConnectorReceived]: [handleUnlockConnector],
   [e.GetInstalledCertificatedIdsReceived]: [handleGetInstalledCertificateIds],
