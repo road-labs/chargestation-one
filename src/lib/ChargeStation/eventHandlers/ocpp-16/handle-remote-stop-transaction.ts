@@ -1,12 +1,14 @@
-export default async function handleRemoteStopTransaction({
-  chargepoint,
-  callMessageId,
-  callMessageBody,
-}) {
+import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
+import { RemoteStopTransactionRequest } from 'schemas/ocpp/1.6/RemoteStopTransaction';
+import { RemoteStopTransactionResponse } from 'schemas/ocpp/1.6/RemoteStopTransactionResponse';
+
+const handleRemoteStopTransaction: ChargeStationEventHandler<
+  RemoteStopTransactionRequest
+> = async ({ chargepoint, callMessageId, callMessageBody }) => {
   const { transactionId } = callMessageBody;
 
-  let connectorId;
-  let response;
+  let connectorId: string | undefined;
+  let response: RemoteStopTransactionResponse;
 
   ['1', '2'].forEach((cId) => {
     if (
@@ -31,4 +33,6 @@ export default async function handleRemoteStopTransaction({
   }
 
   chargepoint.writeCallResult(callMessageId, response);
-}
+};
+
+export default handleRemoteStopTransaction;

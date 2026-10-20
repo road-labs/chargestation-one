@@ -1,8 +1,12 @@
 import { sleep } from '../../../../utils/csv';
 import { EventTypes } from '../event-types';
 import clock from '../../clock';
+import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 
-export default async function handleStartCharging({ emitter, session }) {
+const handleStartCharging: ChargeStationEventHandler = async ({
+  emitter,
+  session,
+}) => {
   await sleep(1000);
   let timeSince = clock.now();
 
@@ -15,4 +19,6 @@ export default async function handleStartCharging({ emitter, session }) {
   session.tick(0);
 
   emitter.emitEvent(EventTypes.Charging, { session });
-}
+};
+
+export default handleStartCharging;

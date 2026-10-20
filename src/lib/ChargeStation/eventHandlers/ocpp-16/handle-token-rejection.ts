@@ -1,11 +1,12 @@
 import { sleep } from '../../../../utils/csv';
 import { EventTypes } from '../event-types';
+import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
 
-export default async function handleTokenRejection({
+const handleTokenRejection: ChargeStationEventHandler = async ({
   chargepoint,
   emitter,
   session,
-}) {
+}) => {
   if (!chargepoint.sessions[session.connectorId]) {
     return;
   }
@@ -17,4 +18,6 @@ export default async function handleTokenRejection({
 
   delete chargepoint.sessions[session.connectorId];
   emitter.emitEvent(EventTypes.SessionCancelled, { session });
-}
+};
+
+export default handleTokenRejection;
