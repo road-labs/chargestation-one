@@ -32,6 +32,10 @@ const options = {
   'ies-ocpp1.6': IESOCPP16,
 };
 
+// A model without its own configuration, such as one set only to match a device type in the CPMS, uses the default.
 export function getOCPPConfiguration(ocppVersion, model) {
-  return options[`${model.toLowerCase()}-${ocppVersion}`];
+  return (
+    options[`${model.toLowerCase()}-${ocppVersion}`] ??
+    options[`default-${ocppVersion}`]
+  );
 }
