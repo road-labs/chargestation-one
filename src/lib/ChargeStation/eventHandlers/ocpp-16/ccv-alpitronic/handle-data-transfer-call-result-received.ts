@@ -1,11 +1,15 @@
 import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
+import { DataTransferResponse } from 'schemas/ocpp/1.6/DataTransferResponse';
 import { EventTypes } from '../../event-types';
 
-const handleDataTransferCallResultReceived: ChargeStationEventHandler = async ({
-  emitter,
-  session,
-  callResultMessageBody,
-}) => {
+const handleDataTransferCallResultReceived: ChargeStationEventHandler<
+  unknown,
+  DataTransferResponse
+> = async ({ emitter, session, callResultMessageBody }) => {
+  if (!callResultMessageBody.data) {
+    return;
+  }
+
   const data = JSON.parse(callResultMessageBody.data);
 
   // In case of an authorization. Can be improved a bit if we actually pass the actual messageId (Authorize/Receipt)

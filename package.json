@@ -10,6 +10,7 @@
     "start": "node ./serve/dev",
     "static": "node ./serve/static",
     "lint": "eslint && prettier --check .",
+    "typecheck": "tsc --noEmit",
     "test": "jest",
     "format": "prettier --write .",
     "knip": "knip"

@@ -1107,7 +1107,7 @@ export interface VariableConfiguration<Variable> {
   ): void;
   getVariablesArray(): Variable[];
   getVersion(): OCPPVersion;
-  getVariableValue(key: string): string | number | null;
+  getVariableValue(key: string): SettingValue | null;
 }
 
 abstract class VariableConfiguration2 implements VariableConfiguration<Variable2> {
@@ -1256,7 +1256,7 @@ abstract class VariableConfiguration2 implements VariableConfiguration<Variable2
     return Object.values(this.variables);
   }
 
-  getVariableValue(key: string): string | number | null {
+  getVariableValue(key: string): SettingValue | null {
     return this.getVariableActualValue(key);
   }
 }
@@ -1322,7 +1322,7 @@ class VariableConfiguration16 implements VariableConfiguration<Variable16> {
 
     return typeof intervalConfig === 'number'
       ? intervalConfig
-      : parseInt(intervalConfig);
+      : parseInt(String(intervalConfig));
   }
 
   variablesToKeyValueMap() {
@@ -1356,7 +1356,7 @@ class VariableConfiguration16 implements VariableConfiguration<Variable16> {
     return Object.values(this.variables);
   }
 
-  getVariableValue(key: string): string | number | null {
+  getVariableValue(key: string): SettingValue | null {
     const variable = this.variables[key];
     if (variable) {
       return variable.value;
