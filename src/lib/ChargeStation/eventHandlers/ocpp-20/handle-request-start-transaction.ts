@@ -19,9 +19,6 @@ const handleRequestStartTransaction: ChargeStationEventHandler<
         Number(evseId),
         {
           authorizationType: 'rfid',
-          carBatteryKwh: 0,
-          carBatteryStateOfCharge: 0,
-          maxPowerKw: 0,
           uid: idToken.idToken,
           idTokenType: idToken.type,
           remoteStartId,

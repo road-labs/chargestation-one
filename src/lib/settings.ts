@@ -28,13 +28,13 @@ export enum ChargeStationSetting {
   EnergyActiveImportUnit = 'energyActiveImportUnit',
   PowerActiveImportUnit = 'powerActiveImportUnit',
   ReconnectDelaySeconds = 'reconnectDelaySeconds',
+  MaxPowerKw = 'maxPowerKw',
+  CarBatteryKwh = 'carBatteryKwh',
+  CarBatteryStateOfCharge = 'carBatteryStateOfCharge',
 }
 
 enum SessionSetting {
   uid = 'uid',
-  maxPowerKw = 'maxPowerKw',
-  carBatteryKwh = 'carBatteryKwh',
-  carBatteryStateOfCharge = 'carBatteryStateOfCharge',
 }
 
 export interface SettingsListSetting<T> {
@@ -313,6 +313,37 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     defaultValue: 3,
     type: 'number',
   },
+  {
+    key: ChargeStationSetting.MaxPowerKw,
+    name: "Charge Station's Max Power (kW)",
+    description:
+      'The power in kW that this charge startion can deliver to a car (e.g. AC single phase is 7.4kW, AC three phase is 22kW, DC Fast charger is 25-175kW',
+    defaultValue: 75,
+    type: 'number',
+  },
+  {
+    key: ChargeStationSetting.CarBatteryKwh,
+    name: 'Car Battery Capacity (kWh)',
+    description:
+      "The car battery capacity that we're simulating in kWh - is used for determinig when to flatten MeterValues and send SuspendedEV notice",
+    defaultValue: 64,
+    type: 'number',
+  },
+  {
+    key: ChargeStationSetting.CarBatteryStateOfCharge,
+    name: 'Car Battery State of Charge (%)',
+    description:
+      'How full is the car battery we are simulating - is used for determinig when to flatten MeterValues and send SuspendedEV notice',
+    defaultValue: 80,
+    type: 'number',
+  },
+];
+
+// these station settings can be overridden for a single session started from the Start Session modal
+export const sessionOverridableSettingKeys: ChargeStationSetting[] = [
+  ChargeStationSetting.MaxPowerKw,
+  ChargeStationSetting.CarBatteryKwh,
+  ChargeStationSetting.CarBatteryStateOfCharge,
 ];
 
 export const sessionSettingsList: SettingsListSetting<SessionSetting>[] = [
@@ -321,30 +352,6 @@ export const sessionSettingsList: SettingsListSetting<SessionSetting>[] = [
     name: 'UID',
     description: 'RFID card UID that would be used in a StartSession',
     defaultValue: 'FF88888801',
-  },
-  {
-    key: SessionSetting.maxPowerKw,
-    name: "Charge Station's Max Power (kW)",
-    description:
-      'The power in kW that this charge startion can deliver to a car (e.g. AC single phase is 7.4kW, AC three phase is 22kW, DC Fast charger is 25-175kW',
-    defaultValue: 75,
-    type: 'number',
-  },
-  {
-    key: SessionSetting.carBatteryKwh,
-    name: 'Car Battery Capacity (kWh)',
-    description:
-      "The car battery capacity that we're simulating in kWh - is used for determinig when to flatten MeterValues and send SuspendedEV notice",
-    defaultValue: 64,
-    type: 'number',
-  },
-  {
-    key: SessionSetting.carBatteryStateOfCharge,
-    name: 'Car Battery State of Charge (%)',
-    description:
-      'How full is the car battery we are simulating - is used for determinig when to flatten MeterValues and send SuspendedEV notice',
-    defaultValue: 80,
-    type: 'number',
   },
 ];
 

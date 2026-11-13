@@ -7,6 +7,7 @@ import {
   AuthorizationType,
   ChargeStationSetting,
   getConfiguration,
+  getSettings,
   OCPPVersion,
   Variable,
   VariableConfiguration,
@@ -46,6 +47,9 @@ export interface Settings {
   energyActiveImportUnit: string;
   powerActiveImportUnit: string;
   reconnectDelaySeconds: number;
+  maxPowerKw: number;
+  carBatteryKwh: number;
+  carBatteryStateOfCharge: number;
 }
 
 interface CallLogItem {
@@ -444,7 +448,9 @@ class ChargeStationStorage {
       return undefined;
     }
 
-    const { settings, config } = storedState;
+    const { config } = storedState;
+    // defaults first, so settings added after the state was cached still get a value
+    const settings = { ...getSettings(), ...storedState.settings };
     const version = settings.ocppConfiguration;
     const configuration = getConfiguration(version, settings);
     configuration.updateVariablesFromKeyValueMap(config);
@@ -466,9 +472,9 @@ DC Rapid Charger	50kW	300km	1 hour (to 80%)
 DC Ultra Rapid Charger	175kW	1000km	15 minutes (to 80%)
 */
 interface SessionOptions {
-  maxPowerKw: number;
-  carBatteryKwh: number;
-  carBatteryStateOfCharge: number;
+  maxPowerKw?: number;
+  carBatteryKwh?: number;
+  carBatteryStateOfCharge?: number;
   uid: string;
   idTokenType?: string;
   authorizationType: AuthorizationType;
@@ -507,9 +513,17 @@ export class Session {
   ) {
     this.options = options;
     this.meterValuesInterval = chargeStation.getMeterValueSampleInterval();
-    this.maxPowerKw = options.maxPowerKw || 22;
-    this.carBatteryKwh = options.carBatteryKwh || 64;
-    this.carBatteryStateOfCharge = options.carBatteryStateOfCharge || 80;
+    // settings passed as URL query parameters arrive as strings, hence the casts
+    this.maxPowerKw = Number(
+      options.maxPowerKw ?? chargeStation.settings.maxPowerKw
+    );
+    this.carBatteryKwh = Number(
+      options.carBatteryKwh ?? chargeStation.settings.carBatteryKwh
+    );
+    this.carBatteryStateOfCharge = Number(
+      options.carBatteryStateOfCharge ??
+        chargeStation.settings.carBatteryStateOfCharge
+    );
     this.remoteStartId = options.remoteStartId;
     this.ignoreCSMSAuthResponse = options.ignoreCSMSAuthResponse || false;
     this.secondsElapsed = 0;

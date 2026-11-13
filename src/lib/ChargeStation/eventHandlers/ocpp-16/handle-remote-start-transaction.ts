@@ -15,15 +15,12 @@ const handleRemoteStartTransaction: ChargeStationEventHandler<
     };
   } else {
     setTimeout(() => {
-      // The zeroes fall back to the session's defaults, and the authorisation type only matters for credit card
-      // sessions, which a remote start never is
+      // The power and battery values come from the station's settings, and the authorisation type only matters for
+      // credit card sessions, which a remote start never is
       chargepoint.startSession(
         Number(connectorId),
         {
           authorizationType: 'rfid',
-          carBatteryKwh: 0,
-          carBatteryStateOfCharge: 0,
-          maxPowerKw: 0,
           uid: idTag,
           skipAuthorize:
             chargepoint.configuration
