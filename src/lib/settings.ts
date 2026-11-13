@@ -28,13 +28,13 @@ export enum ChargeStationSetting {
   EnergyActiveImportUnit = 'energyActiveImportUnit',
   PowerActiveImportUnit = 'powerActiveImportUnit',
   ReconnectDelaySeconds = 'reconnectDelaySeconds',
+  MaxPowerKw = 'maxPowerKw',
+  CarBatteryKwh = 'carBatteryKwh',
+  CarBatteryStateOfCharge = 'carBatteryStateOfCharge',
 }
 
 enum SessionSetting {
   uid = 'uid',
-  maxPowerKw = 'maxPowerKw',
-  carBatteryKwh = 'carBatteryKwh',
-  carBatteryStateOfCharge = 'carBatteryStateOfCharge',
 }
 
 export interface SettingsListSetting<T> {
@@ -313,6 +313,37 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     defaultValue: 3,
     type: 'number',
   },
+  {
+    key: ChargeStationSetting.MaxPowerKw,
+    name: "Charge Station's Max Power (kW)",
+    description:
+      'The power in kW that this charge startion can deliver to a car (e.g. AC single phase is 7.4kW, AC three phase is 22kW, DC Fast charger is 25-175kW',
+    defaultValue: 75,
+    type: 'number',
+  },
+  {
+    key: ChargeStationSetting.CarBatteryKwh,
+    name: 'Car Battery Capacity (kWh)',
+    description:
+      "The car battery capacity that we're simulating in kWh - is used for determinig when to flatten MeterValues and send SuspendedEV notice",
+    defaultValue: 64,
+    type: 'number',
+  },
+  {
+    key: ChargeStationSetting.CarBatteryStateOfCharge,
+    name: 'Car Battery State of Charge (%)',
+    description:
+      'How full is the car battery we are simulating - is used for determinig when to flatten MeterValues and send SuspendedEV notice',
+    defaultValue: 80,
+    type: 'number',
+  },
+];
+
+// these station settings can be overridden for a single session started from the Start Session modal
+export const sessionOverridableSettingKeys: ChargeStationSetting[] = [
+  ChargeStationSetting.MaxPowerKw,
+  ChargeStationSetting.CarBatteryKwh,
+  ChargeStationSetting.CarBatteryStateOfCharge,
 ];
 
 export const sessionSettingsList: SettingsListSetting<SessionSetting>[] = [
@@ -321,30 +352,6 @@ export const sessionSettingsList: SettingsListSetting<SessionSetting>[] = [
     name: 'UID',
     description: 'RFID card UID that would be used in a StartSession',
     defaultValue: 'FF88888801',
-  },
-  {
-    key: SessionSetting.maxPowerKw,
-    name: "Charge Station's Max Power (kW)",
-    description:
-      'The power in kW that this charge startion can deliver to a car (e.g. AC single phase is 7.4kW, AC three phase is 22kW, DC Fast charger is 25-175kW',
-    defaultValue: 75,
-    type: 'number',
-  },
-  {
-    key: SessionSetting.carBatteryKwh,
-    name: 'Car Battery Capacity (kWh)',
-    description:
-      "The car battery capacity that we're simulating in kWh - is used for determinig when to flatten MeterValues and send SuspendedEV notice",
-    defaultValue: 64,
-    type: 'number',
-  },
-  {
-    key: SessionSetting.carBatteryStateOfCharge,
-    name: 'Car Battery State of Charge (%)',
-    description:
-      'How full is the car battery we are simulating - is used for determinig when to flatten MeterValues and send SuspendedEV notice',
-    defaultValue: 80,
-    type: 'number',
   },
 ];
 
@@ -1006,18 +1013,42 @@ export function getDocumentQuery() {
   return new URLSearchParams(document.location.search);
 }
 
-export function getSettings(): Map<string | number> {
+export type SettingValue = string | number | boolean;
+
+export function castSettingValue(
+  type: SettingsListSetting<unknown>['type'],
+  value: unknown
+): unknown {
+  switch (type) {
+    case 'number':
+      return Number(value);
+    case 'boolean':
+      return value === true || value === 'true';
+    case 'string':
+    default:
+      return value;
+  }
+}
+
+function readSettingsFromQuery<T>(
+  list: SettingsListSetting<T>[]
+): Map<SettingValue> {
   const query = getDocumentQuery();
-  const result: Map<string | number> = {};
-  for (const item of settingsList) {
-    const { key } = item;
-    if (query.get(key)) {
-      result[key] = query.get(key) as string | number;
+  const result: Map<SettingValue> = {};
+  for (const item of list) {
+    const key = String(item.key);
+    const queryValue = query.get(key);
+    if (queryValue) {
+      result[key] = castSettingValue(item.type, queryValue) as SettingValue;
       continue;
     }
     result[key] = item.defaultValue;
   }
   return result;
+}
+
+export function getSettings(): Map<SettingValue> {
+  return readSettingsFromQuery(settingsList);
 }
 
 export type Variable = Variable16 | Variable2;
@@ -1056,22 +1087,12 @@ export function ocppVersion() {
 }
 
 export function getDefaultSession() {
-  const query = getDocumentQuery();
-  const result: Map<string | number> = {};
-  for (const item of sessionSettingsList) {
-    const { key } = item;
-    if (query.get(key)) {
-      result[key] = query.get(key) as string | number;
-      continue;
-    }
-    result[key] = item.defaultValue;
-  }
-  return result;
+  return readSettingsFromQuery(sessionSettingsList);
 }
 
 interface VariableKeyValueMap extends Map<{
   key: string;
-  value: string | number;
+  value: SettingValue;
 }> {}
 
 export interface VariableConfiguration<Variable> {
@@ -1086,7 +1107,7 @@ export interface VariableConfiguration<Variable> {
   ): void;
   getVariablesArray(): Variable[];
   getVersion(): OCPPVersion;
-  getVariableValue(key: string): string | number | null;
+  getVariableValue(key: string): SettingValue | null;
 }
 
 abstract class VariableConfiguration2 implements VariableConfiguration<Variable2> {
@@ -1235,7 +1256,7 @@ abstract class VariableConfiguration2 implements VariableConfiguration<Variable2
     return Object.values(this.variables);
   }
 
-  getVariableValue(key: string): string | number | null {
+  getVariableValue(key: string): SettingValue | null {
     return this.getVariableActualValue(key);
   }
 }
@@ -1301,7 +1322,7 @@ class VariableConfiguration16 implements VariableConfiguration<Variable16> {
 
     return typeof intervalConfig === 'number'
       ? intervalConfig
-      : parseInt(intervalConfig);
+      : parseInt(String(intervalConfig));
   }
 
   variablesToKeyValueMap() {
@@ -1335,7 +1356,7 @@ class VariableConfiguration16 implements VariableConfiguration<Variable16> {
     return Object.values(this.variables);
   }
 
-  getVariableValue(key: string): string | number | null {
+  getVariableValue(key: string): SettingValue | null {
     const variable = this.variables[key];
     if (variable) {
       return variable.value;

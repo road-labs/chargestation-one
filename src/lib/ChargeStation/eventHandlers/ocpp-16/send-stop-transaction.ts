@@ -5,8 +5,9 @@ import { signMeterReadings } from 'lib/ChargeStation/ocmf';
 import ChargeStation, { Session } from 'lib/ChargeStation';
 import { ChargeStationSetting, formatEnergyMeterReading } from 'lib/settings';
 
-type Ocpp16SampledValue =
-  StopTransactionRequest['transactionData'][0]['sampledValue'][0];
+type Ocpp16SampledValue = NonNullable<
+  StopTransactionRequest['transactionData']
+>[number]['sampledValue'][number];
 
 const sendStopTransaction: ChargeStationEventHandler = async ({
   chargepoint,
@@ -116,7 +117,7 @@ const signOcpp16TransactionEnd = async (
 
 const buildOcmfSampledValue = (
   signedData: string,
-  context: string
+  context: Ocpp16SampledValue['context']
 ): Ocpp16SampledValue => ({
   value: signedData,
   context,

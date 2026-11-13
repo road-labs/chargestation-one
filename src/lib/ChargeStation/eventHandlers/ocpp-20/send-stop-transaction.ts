@@ -1,14 +1,18 @@
 import { sleep } from '../../../../utils/csv';
 
-import { ChargeStationEventHandler } from 'lib/ChargeStation/eventHandlers';
+import { ChargeStationEventHandlerParams } from 'lib/ChargeStation/eventHandlers';
 import { ChargeStationSetting, formatEnergyMeterReading } from 'lib/settings';
 
 import clock from '../../clock';
 
-const sendStopTransaction: ChargeStationEventHandler = async ({
+// takes only what it uses, so the TransactionEvent result handler can call it directly as well as the event emitter
+const sendStopTransaction = async ({
   chargepoint,
   session,
-}) => {
+}: Pick<
+  ChargeStationEventHandlerParams<unknown, unknown>,
+  'chargepoint' | 'session'
+>) => {
   chargepoint.sessions[session.connectorId].isStoppingSession = true;
   chargepoint.sessions[session.connectorId].tickInterval?.stop();
 

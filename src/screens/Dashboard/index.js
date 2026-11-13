@@ -283,6 +283,7 @@ export default class Home extends React.Component {
             <StartSessionModal
               availableConnectors={chargeStation.availableConnectors()}
               session={session}
+              settings={settings}
               onSave={({ connectorId, session, authorizationType }) => {
                 this.setState({ session });
                 chargeStation.startSession(

@@ -1,13 +1,33 @@
 import React from 'react';
 import { Modal, Button, Form, Divider, FormField, Label } from 'semantic';
 import modal from 'helpers/modal';
-import { AuthorizationType, sessionSettingsList } from 'lib/settings';
+import {
+  AuthorizationType,
+  sessionOverridableSettingKeys,
+  sessionSettingsList,
+  settingsList,
+} from 'lib/settings';
 import SettingsInput from 'screens/Dashboard/SettingsInput';
+
+const sessionOverridableSettingsList = settingsList.filter((item) =>
+  sessionOverridableSettingKeys.includes(item.key)
+);
+
+function getSessionDefaultsFromSettings(settings) {
+  const sessionDefaults = {};
+  for (const key of sessionOverridableSettingKeys) {
+    sessionDefaults[key] = settings[key];
+  }
+  return sessionDefaults;
+}
 
 @modal
 export default class StartSessionModal extends React.Component {
   state = {
-    session: this.props.session,
+    session: {
+      ...this.props.session,
+      ...getSessionDefaultsFromSettings(this.props.settings),
+    },
     connectorId: this.props.availableConnectors[0],
     authorizationType: AuthorizationType.RFID,
   };
@@ -74,7 +94,10 @@ export default class StartSessionModal extends React.Component {
             />
             {connectorId && (
               <React.Fragment>
-                {sessionSettingsList.map((item) => {
+                {[
+                  ...sessionSettingsList,
+                  ...sessionOverridableSettingsList,
+                ].map((item) => {
                   return (
                     <div key={item.key} style={{ marginBottom: '8px' }}>
                       <SettingsInput
