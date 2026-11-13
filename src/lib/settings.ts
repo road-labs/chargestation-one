@@ -1013,18 +1013,42 @@ export function getDocumentQuery() {
   return new URLSearchParams(document.location.search);
 }
 
-export function getSettings(): Map<string | number> {
+export type SettingValue = string | number | boolean;
+
+export function castSettingValue(
+  type: SettingsListSetting<unknown>['type'],
+  value: unknown
+): unknown {
+  switch (type) {
+    case 'number':
+      return Number(value);
+    case 'boolean':
+      return value === true || value === 'true';
+    case 'string':
+    default:
+      return value;
+  }
+}
+
+function readSettingsFromQuery<T>(
+  list: SettingsListSetting<T>[]
+): Map<SettingValue> {
   const query = getDocumentQuery();
-  const result: Map<string | number> = {};
-  for (const item of settingsList) {
-    const { key } = item;
-    if (query.get(key)) {
-      result[key] = query.get(key) as string | number;
+  const result: Map<SettingValue> = {};
+  for (const item of list) {
+    const key = String(item.key);
+    const queryValue = query.get(key);
+    if (queryValue) {
+      result[key] = castSettingValue(item.type, queryValue) as SettingValue;
       continue;
     }
     result[key] = item.defaultValue;
   }
   return result;
+}
+
+export function getSettings(): Map<SettingValue> {
+  return readSettingsFromQuery(settingsList);
 }
 
 export type Variable = Variable16 | Variable2;
@@ -1063,22 +1087,12 @@ export function ocppVersion() {
 }
 
 export function getDefaultSession() {
-  const query = getDocumentQuery();
-  const result: Map<string | number> = {};
-  for (const item of sessionSettingsList) {
-    const { key } = item;
-    if (query.get(key)) {
-      result[key] = query.get(key) as string | number;
-      continue;
-    }
-    result[key] = item.defaultValue;
-  }
-  return result;
+  return readSettingsFromQuery(sessionSettingsList);
 }
 
 interface VariableKeyValueMap extends Map<{
   key: string;
-  value: string | number;
+  value: SettingValue;
 }> {}
 
 export interface VariableConfiguration<Variable> {

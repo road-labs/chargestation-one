@@ -1,13 +1,14 @@
+import { describe, expect, it, jest } from '@jest/globals';
 import ChargeStation, { Session, Settings } from 'lib/ChargeStation';
 import { ChargeStationEventEmitter } from 'lib/ChargeStation/eventHandlers';
 
 // utils/env reads window.__ENV__, which does not exist in the node test environment
 jest.mock('utils/env', () => ({}));
 // the OCMF packages ship as ES modules, which Jest does not transform; signing is not under test here
-jest.mock('@road-labs/ocmf-crypto-noble', () => ({ Crypto: jest.fn() }));
-jest.mock('@road-labs/ocmf', () => ({ Signer: jest.fn() }));
+jest.mock('@road-labs/ocmf-crypto-noble', () => ({ Crypto: class {} }));
+jest.mock('@road-labs/ocmf', () => ({ Signer: class {} }));
 
-// Jest 28 cannot fake performance on Node 22, where it is read-only
+// the simulation clock starts an interval on import; Jest 28 cannot fake performance on Node 22, where it is read-only
 jest.useFakeTimers({ doNotFake: ['performance'] });
 
 function createChargeStationStub(settings: Partial<Settings>): ChargeStation {
@@ -65,11 +66,11 @@ describe('Session', () => {
     expect(session.stateOfCharge).toBe(10);
   });
 
-  it('adds charge to the state of charge numerically when the settings came from URL query parameters as strings', async () => {
+  it('adds charge to the state of charge in proportion to the max power and battery capacity', async () => {
     const chargeStation = createChargeStationStub({
-      maxPowerKw: '36' as unknown as number,
-      carBatteryKwh: '100' as unknown as number,
-      carBatteryStateOfCharge: '50' as unknown as number,
+      maxPowerKw: 36,
+      carBatteryKwh: 100,
+      carBatteryStateOfCharge: 50,
     });
 
     const session = new Session(

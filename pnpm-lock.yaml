@@ -114,6 +114,9 @@ importers:
       '@hot-loader/react-dom':
         specifier: ^17.0.1
         version: 17.0.2(react@17.0.2)
+      '@jest/globals':
+        specifier: 28.1.3
+        version: 28.1.3
       '@testing-library/react':
         specifier: ^11.2.5
         version: 11.2.7(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -1011,6 +1014,7 @@ packages:
   '@google-cloud/opentelemetry-cloud-trace-exporter@1.2.0':
     resolution: {integrity: sha512-73rikv8RTZmQvLwCREPceFVG/H2KyWMF3ggj7nBLR4RJwn+ZBQTaZ2A4d+hVU4M8+d7A9LApqG33ZfGk7lnQDQ==}
     engines: {node: '>=10'}
+    deprecated: Google Cloud Platform now supports native OpenTelemetry Protocol (OTLP) endpoints via the Telemetry API. Please follow https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md
     peerDependencies:
       '@opentelemetry/api': ^1.0.0
       '@opentelemetry/core': ^1.0.0
@@ -1020,6 +1024,7 @@ packages:
   '@google-cloud/opentelemetry-resource-util@1.2.0':
     resolution: {integrity: sha512-1NCk5o4mJEMgeJaCjffwAsbdrfRepFJ0ZbfSQ3eS4IyqnUZn5wyX027xtk7lNy0RBJF7lyhQwxtN7sSbtvp+YA==}
     engines: {node: '>=10'}
+    deprecated: Google Cloud Platform now supports native OpenTelemetry Protocol (OTLP) endpoints via the Telemetry API. Please follow https://github.com/GoogleCloudPlatform/opentelemetry-operations-js/blob/main/MIGRATION.md
     peerDependencies:
       '@opentelemetry/resources': ^1.0.0
       '@opentelemetry/semantic-conventions': ^1.0.0
@@ -1293,6 +1298,7 @@ packages:
   '@opentelemetry/propagator-jaeger@1.30.1':
     resolution: {integrity: sha512-Pj/BfnYEKIOImirH76M4hDaBSx6HyZ2CXUqk+Kj02m6BB80c/yo4BdWkn/1gDFfU+YPY+bPR2U0DKBfdxCKwmg==}
     engines: {node: '>=14'}
+    deprecated: Package no longer supported. See https://github.com/open-telemetry/opentelemetry-js/pull/7077
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
@@ -1305,12 +1311,14 @@ packages:
   '@opentelemetry/sdk-trace-base@1.30.1':
     resolution: {integrity: sha512-jVPgBbH1gCy2Lb7X0AVQ8XAfgg0pJ4nvl8/IiQA6nxOsPvS+0zMJaFSs2ltXe0J6C8dqjcnpyqINDJmU30+uOg==}
     engines: {node: '>=14'}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
   '@opentelemetry/sdk-trace-node@1.30.1':
     resolution: {integrity: sha512-cBjYOINt1JxXdpw1e5MlHmFRc5fgj4GW/86vsKFxJCJ8AL4PdVtYH41gWwl4qd4uQjqEL1oJVrXkSy5cnduAnQ==}
     engines: {node: '>=14'}
+    deprecated: Use @opentelemetry/sdk-trace package
     peerDependencies:
       '@opentelemetry/api': '>=1.0.0 <1.10.0'
 
@@ -3229,6 +3237,7 @@ packages:
   image-size@0.5.5:
     resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
     engines: {node: '>=0.10.0'}
+    deprecated: Please migrate to image-size@2.x
     hasBin: true
 
   import-fresh@3.3.1:

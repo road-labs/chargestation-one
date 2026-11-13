@@ -1,4 +1,4 @@
-import { SettingsListSetting } from 'lib/settings';
+import { castSettingValue, SettingsListSetting } from 'lib/settings';
 import { Form } from 'semantic';
 import { HelpTip } from 'components';
 import React from 'react';
@@ -12,18 +12,6 @@ interface Props<T> {
   ) => void;
 }
 
-const castValue = (type: string | undefined, value: unknown): unknown => {
-  switch (type) {
-    case 'number':
-      return Number(value);
-    case 'boolean':
-      return value === 'true';
-    case 'string':
-    default:
-      return value;
-  }
-};
-
 export default function SettingsInput<T>({ item, value, onChange }: Props<T>) {
   const handleChange = (
     e: React.SyntheticEvent<HTMLElement, Event>,
@@ -31,7 +19,7 @@ export default function SettingsInput<T>({ item, value, onChange }: Props<T>) {
   ) =>
     onChange(e, {
       name,
-      value: castValue(item.type, value),
+      value: castSettingValue(item.type, value),
     });
 
   return (

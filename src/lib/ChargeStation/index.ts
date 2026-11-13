@@ -513,17 +513,12 @@ export class Session {
   ) {
     this.options = options;
     this.meterValuesInterval = chargeStation.getMeterValueSampleInterval();
-    // settings passed as URL query parameters arrive as strings, hence the casts
-    this.maxPowerKw = Number(
-      options.maxPowerKw ?? chargeStation.settings.maxPowerKw
-    );
-    this.carBatteryKwh = Number(
-      options.carBatteryKwh ?? chargeStation.settings.carBatteryKwh
-    );
-    this.carBatteryStateOfCharge = Number(
+    this.maxPowerKw = options.maxPowerKw ?? chargeStation.settings.maxPowerKw;
+    this.carBatteryKwh =
+      options.carBatteryKwh ?? chargeStation.settings.carBatteryKwh;
+    this.carBatteryStateOfCharge =
       options.carBatteryStateOfCharge ??
-        chargeStation.settings.carBatteryStateOfCharge
-    );
+      chargeStation.settings.carBatteryStateOfCharge;
     this.remoteStartId = options.remoteStartId;
     this.ignoreCSMSAuthResponse = options.ignoreCSMSAuthResponse || false;
     this.secondsElapsed = 0;
