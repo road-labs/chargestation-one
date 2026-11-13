@@ -11,6 +11,7 @@ export enum ChargeStationSetting {
   ChargePointVendor = 'chargePointVendor',
   ChargePointModel = 'chargePointModel',
   ChargePointSerialNumber = 'chargePointSerialNumber',
+  FirmwareVersion = 'firmwareVersion',
   ICCID = 'iccid',
   IMSI = 'imsi',
   PrivateKey = 'privateKey',
@@ -166,6 +167,12 @@ export const settingsList: SettingsListSetting<ChargeStationSetting>[] = [
     name: 'Boot / Serial Number',
     description: 'The chargePointSerialNumber sent during BootNotification',
     defaultValue: 'CP1-2919101',
+  },
+  {
+    key: ChargeStationSetting.FirmwareVersion,
+    name: 'Boot / Firmware Version',
+    description: 'The firmwareVersion sent during BootNotification',
+    defaultValue: 'v1-000',
   },
   {
     key: ChargeStationSetting.ICCID,

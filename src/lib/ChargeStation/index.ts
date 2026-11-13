@@ -26,6 +26,7 @@ export interface Settings {
   chargePointVendor: string;
   chargePointModel: string;
   chargePointSerialNumber: string;
+  firmwareVersion: string;
   iccid: string;
   imsi: string;
   privateKey?: string;
@@ -99,7 +100,7 @@ export default class ChargeStation {
   ) {
     this.callLog = {};
     this.sessions = {};
-    this.firmwareVersion = 'v1-000';
+    this.firmwareVersion = this.settings.firmwareVersion || 'v1-000';
     this.ocppVersion = this.settings.ocppConfiguration as OCPPVersion;
     this.emitter = createEventEmitter(this, this.ocppVersion);
     this.currentStatus = {
